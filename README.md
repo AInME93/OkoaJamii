@@ -1,61 +1,77 @@
-# Flask-Admin Dashboard Example
+OkoaJamii
+===
 
-Basic dashboard app with Admin LTE template and Flask Admin, it has:
+A Flask web application that features an online reporting tool as well as an online case management platform.
 
-- User Registration
-- Login as general or admin user
-- Roles management
-- Create form in modal window by default
-- Inline editing enabled by default
-- Skins and  layout customization
-- Dashboard, charts, chat and calendar examples
- 
-Utilities: 
+Getting Started
+===
 
-  - AdminLTE Bootstrap template
-  - Flask-Security
-  - Flask-Admin
-  - A lot of Charts libraries
-  - SQLite
+Install virtualenv in your machine if you don't have one yet.
 
+```
+pip install virtualenv
+```
 
-### How to use
+Create virtualenv directory inside the project folder
 
-- Clone or download the git repository.
-    ```sh
-    $ git clone https://github.com/jonalxh/Flask-Admin-Dashboard.git
-    ```
-- Create and activate a virtual environment:
-    ```sh
-    $ virtualenv venv
-    $ source venv/bin/activate
-    ```
-- Install the requirements inside the app folder
-    ```sh
-    $ pip install -r requirements.txt
-    ```
-- Once the process finishes give execution permission to app.py file and run it
-    ```sh
-    $ chmod +x app.py
-    $ ./app.py
-    ```
-- The first execution will create automatically a sample sqlite database.
-- Open your favorite browser and type
-    ```
-    localhost:5000/admin
-    ```
-    then just log in with the default user or register one. 
+```
+virtualenv venv
+```
 
-### Screenshots
-![Index](screenshots/index.png)
-![Login](screenshots/login.png)
-![Register](screenshots/register.png)
-![Home](screenshots/home.png)
-![User](screenshots/user.png)
-![Edit](screenshots/edit.png)
-![Create](screenshots/create.png)
-![Skins and Layout](screenshots/skins.png)
+Activate your virtual environment from the Scripts folder.
+
+```
+cd venv/Scripts
+```
+
+```
+activate
+```
+
+Install the library and module requirements from the main directory
+
+```
+pip install -r requirements.txt
+```
+
+And now you should be good to go. To run the Flask server use the following command:
+
+```
+python manage.py runserver.
+
+```
+To run shell:
+
+```
+python manage.py shell
+```
 
 
+To create the database and tables:
 
-**I hope you enjoy it.**
+Install postgres on your computer and its dependencies e.g psycopg2
+
+Create a new user/password and database as they appear in config.py file (adminuser/hardtocrackpassword) db (Main)
+
+on command prompt run
+```
+python manage.py shell
+
+from app import db
+
+db.create_all()
+```
+
+Built With
+===
+
+Python 3.6  
+[Flask](http://flask.pocoo.org/docs/0.12/) 
+[Flask-SQLAlchemy](http://flask-sqlalchemy.pocoo.org/2.3/)  
+[Flask-Migrate](https://flask-migrate.readthedocs.io/en/latest/)  
+
+
+Author
+===
+
+Imran Abdallah

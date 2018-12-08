@@ -1,0 +1,111 @@
+from flask import url_for, request, render_template, helpers, flash
+from flask_admin import expose
+from flask_security import UserMixin, RoleMixin, current_user, LoginForm, login_user, logout_user, url_for_security
+from werkzeug.exceptions import abort
+from werkzeug.utils import redirect
+
+from flask_admin.contrib import sqla
+from app import db
+
+
+# Define models
+roles_users = db.Table('roles_users',
+        db.Column('user_id', db.Integer(), db.ForeignKey('User.id')),
+        db.Column('role_id', db.Integer(), db.ForeignKey('Role.id')))
+
+class Role(db.Model, RoleMixin):
+    __tablename__ = "Role"
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(80), unique=True)
+    description = db.Column(db.String(255))
+
+class User(db.Model, UserMixin):
+    __tablename__ = "User"
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(255), unique=True)
+    username = db.Column(db.String(100), unique=True)
+    password = db.Column(db.String(255))
+    active = db.Column(db.Boolean())
+    confirmed_at = db.Column(db.DateTime())
+
+    roles = db.relationship('Role', secondary=roles_users,
+                            backref=db.backref('users', lazy='dynamic'))
+
+
+class Alert(db.Model):
+    __tablename__ = "Alert"
+    id = db.Column(db.Integer, primary_key=True)
+    victimType = db.Column(db.String(255))
+    victimName = db.Column(db.String(255))
+    reporterName = db.Column(db.String(255))
+    reporterEmail = db.Column(db.String(255))
+    details = db.Column(db.String(1250))
+    county = db.Column(db.String(255))
+    constituency = db.Column(db.String(255))
+    time = db.Column(db.DateTime())
+    status = db.Column(db.String(255))
+
+
+# Create customized model view class
+class MyModelView(sqla.ModelView):
+
+    def is_accessible(self):
+        if not current_user.is_active or not current_user.is_authenticated:
+            return False
+
+        if current_user.has_role('admin'):
+            return True
+
+        return False
+
+    def _handle_view(self, name, **kwargs):
+        """
+        Override builtin _handle_view in order to redirect users when a view is not accessible.
+        """
+        if not self.is_accessible():
+            if current_user.is_authenticated:
+                # permission denied
+                abort(403)
+            else:
+                # login
+                return redirect(url_for('security.login', next=request.url))
+
+
+    # can_edit = True
+    edit_modal = True
+    create_modal = True
+    can_export = True
+    can_view_details = True
+    details_modal = True
+
+    @expose('/mailbox')
+    def mailboxMod(self):
+        return self.render('mailbox.html')
+
+class UserView(MyModelView):
+    column_editable_list = ['email']
+    column_searchable_list = column_editable_list
+    column_exclude_list = ['password']
+    # form_excluded_columns = column_exclude_list
+    column_details_exclude_list = column_exclude_list
+    column_filters = column_editable_list
+
+
+
+
+
+# # Add model views
+# admin.add_view(MyModelView(Role, db.session, menu_icon_type='fa', menu_icon_value='fa-server', name="Roles"))
+# admin.add_view(UserView(User, db.session, menu_icon_type='fa', menu_icon_value='fa-users', name="Users"))
+# admin.add_view(CustomView(name="Custom view", endpoint='custom', menu_icon_type='fa', menu_icon_value='fa-connectdevelop',))
+#
+# # define a context processor for merging flask-admin's template context into the
+# # flask-security views.
+# @security.context_processor
+# def security_context_processor():
+#     return dict(
+#         admin_base_template=admin.base_template,
+#         admin_view=admin.index_view,
+#         h=admin_helpers,
+#         get_url=url_for
+#     )

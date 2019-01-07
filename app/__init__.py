@@ -27,14 +27,14 @@ def create_app(config_name):
     admin = Admin(
         app,
         'My Dashboard',
-        index_view= MyAdminIndexView(),
+        index_view= MyAdminIndexView(url='/admin', endpoint='original_admin'),
         base_template='my_master.html',
         template_mode='bootstrap3'
     )
 
     org_admin = Admin(
         app,
-        'My Dashboard',
+        'Dashboard',
         index_view= OrganizationAdminIndexView(url='/organization/admin', endpoint='organization'),
         base_template='my_master.html',
         template_mode='bootstrap3',
@@ -75,7 +75,7 @@ def create_app(config_name):
 
 
     # org_admin.add_view(MyModelView(Alert, db.session, menu_icon_type='fa', menu_icon_value='fa-exclamation-triangle', name="Alerable"))
-    org_admin.add_view(CustomView(name="Custom", endpoint='custom', menu_icon_type='fa', menu_icon_value='fa-connectdevelop', ))
+    org_admin.add_view(CustomView(name="Custom", endpoint='custom_1', menu_icon_type='fa', menu_icon_value='fa-connectdevelop', ))
 
     with app.app_context():
         db.init_app(app)

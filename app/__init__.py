@@ -11,6 +11,7 @@ db = SQLAlchemy()
 
 from app.models import User, Role, MyModelView, UserView, Alert
 from app.main.views import MyAdminIndexView
+from app.organization.views import OrganizationAdminIndexView
 mail = Mail()
 
 
@@ -31,12 +32,24 @@ def create_app(config_name):
         template_mode='bootstrap3'
     )
 
+    org_admin = Admin(
+        app,
+        'My Dashboard',
+        index_view= OrganizationAdminIndexView(url='/organization/admin', endpoint='organization'),
+        base_template='my_master.html',
+        template_mode='bootstrap3',
+        url = '/organization/admin'
+    )
+
     # Setup Flask-Security
     user_datastore = SQLAlchemyUserDatastore(db, User, Role)
     security = Security(app, user_datastore, register_form=ExtendedRegisterForm)
 
     from app.main import public as main_blueprint
     app.register_blueprint(main_blueprint)
+
+    from app.organization import private as private_blueprint
+    app.register_blueprint(private_blueprint)
 
     # from app.users import users as users_blueprint
     # app.register_blueprint(users_blueprint)
@@ -59,6 +72,10 @@ def create_app(config_name):
     admin.add_view(MyModelView(Role, db.session, menu_icon_type='fa', menu_icon_value='fa-server', name="Roles"))
     admin.add_view(UserView(User, db.session, menu_icon_type='fa', menu_icon_value='fa-users', name="Users"))
     admin.add_view(CustomView(name="Custom view", endpoint='custom', menu_icon_type='fa', menu_icon_value='fa-connectdevelop', ))
+
+
+    # org_admin.add_view(MyModelView(Alert, db.session, menu_icon_type='fa', menu_icon_value='fa-exclamation-triangle', name="Alerable"))
+    org_admin.add_view(CustomView(name="Custom", endpoint='custom', menu_icon_type='fa', menu_icon_value='fa-connectdevelop', ))
 
     with app.app_context():
         db.init_app(app)

@@ -45,7 +45,7 @@ class Config:
 
 
 class DevelopmentConfig(Config):
-    DEBUG = True #Set to false when deploying
+    DEBUG = True #Set to false when deploying!!!
     SQLALCHEMY_DATABASE_URI = 'postgresql://adminuser:hardtocrackpassword@localhost/Main'
 
 class TestingConfig(Config):

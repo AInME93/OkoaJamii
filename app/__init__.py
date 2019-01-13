@@ -9,11 +9,11 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-from app.models import User, Role, MyModelView, UserView, Alert
+from app.models import User, Role, Alert
+from app.models import MyModelView, UserView, OrganizationModelView, UserViewOrg
 from app.main.views import MyAdminIndexView
 from app.organization.views import OrganizationAdminIndexView
 mail = Mail()
-
 
 
 def create_app(config_name):
@@ -27,7 +27,7 @@ def create_app(config_name):
     admin = Admin(
         app,
         'My Dashboard',
-        index_view= MyAdminIndexView(url='/admin', endpoint='original_admin'),
+        index_view=MyAdminIndexView(),
         base_template='my_master.html',
         template_mode='bootstrap3'
     )
@@ -35,10 +35,9 @@ def create_app(config_name):
     org_admin = Admin(
         app,
         'Dashboard',
-        index_view= OrganizationAdminIndexView(url='/organization/admin', endpoint='organization'),
+        index_view= OrganizationAdminIndexView(url='/<org_name>/admin', endpoint='organization'),
         base_template='my_master.html',
-        template_mode='bootstrap3',
-        url = '/organization/admin'
+        template_mode='bootstrap3'
     )
 
     # Setup Flask-Security
@@ -50,9 +49,6 @@ def create_app(config_name):
 
     from app.organization import private as private_blueprint
     app.register_blueprint(private_blueprint)
-
-    # from app.users import users as users_blueprint
-    # app.register_blueprint(users_blueprint)
 
     # define a context processor for merging flask-admin's template context into the
     # flask-security views.
@@ -74,7 +70,7 @@ def create_app(config_name):
     admin.add_view(CustomView(name="Custom view", endpoint='custom', menu_icon_type='fa', menu_icon_value='fa-connectdevelop', ))
 
 
-    # org_admin.add_view(MyModelView(Alert, db.session, menu_icon_type='fa', menu_icon_value='fa-exclamation-triangle', name="Alerable"))
+    # org_admin.add_view(OrganizationModelView(Alert, db.session, menu_icon_type='fa', menu_icon_value='fa-exclamation-triangle', name="Alerable"))
     org_admin.add_view(CustomView(name="Custom", endpoint='custom_1', menu_icon_type='fa', menu_icon_value='fa-connectdevelop', ))
 
     with app.app_context():

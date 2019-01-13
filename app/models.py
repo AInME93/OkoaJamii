@@ -45,6 +45,7 @@ class Alert(db.Model):
     detailsPlace = db.Column(db.String(1250))
     county = db.Column(db.String(255))
     constituency = db.Column(db.String(255))
+    ward = db.Column(db.String(255))
     urgency = db.Column(db.String(255))
     choiceOrganization = db.Column(db.String(255))
     location = db.Column(db.String(255))
@@ -88,7 +89,7 @@ class Person(db.Model):
 class Organization(db.Model):
     __tablename__ = "Organization"
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255))
+    orgName = db.Column(db.String(255))
     logo = db.Column(db.LargeBinary)
     webURL = db.Column(db.String(255))
     orgBrief = db.Column(db.String(255))
@@ -193,29 +194,10 @@ class OrganizationModelView(sqla.ModelView):
     def mailboxMod(self):
         return self.render('mailbox.html')
 
-class UserView(OrganizationModelView):
+class UserViewOrg(OrganizationModelView):
     column_editable_list = ['email']
     column_searchable_list = column_editable_list
     column_exclude_list = ['password']
     # form_excluded_columns = column_exclude_list
     column_details_exclude_list = column_exclude_list
     column_filters = column_editable_list
-
-
-
-
-# # Add model views
-# admin.add_view(MyModelView(Role, db.session, menu_icon_type='fa', menu_icon_value='fa-server', name="Roles"))
-# admin.add_view(UserView(User, db.session, menu_icon_type='fa', menu_icon_value='fa-users', name="Users"))
-# admin.add_view(CustomView(name="Custom view", endpoint='custom', menu_icon_type='fa', menu_icon_value='fa-connectdevelop',))
-#
-# # define a context processor for merging flask-admin's template context into the
-# # flask-security views.
-# @security.context_processor
-# def security_context_processor():
-#     return dict(
-#         admin_base_template=admin.base_template,
-#         admin_view=admin.index_view,
-#         h=admin_helpers,
-#         get_url=url_for
-#     )

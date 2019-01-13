@@ -8,7 +8,7 @@ from flask_migrate import Migrate, MigrateCommand
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 manager = Manager(app)
 migrate = Migrate(app, db)
-server = Server(host='0.0.0.0', port=5002)
+server = Server(host='localhost', port=5002)
 
 #The make_shell_context() function registers the application and database instances and the models
 # so that they are automatically imported into the shell

@@ -24,6 +24,13 @@ def index():
 
     return render_template('index.html', form = form)
 
+@public.route('/contact',  methods = ['GET','POST'])
+def contact():
+    return render_template('contact.html')
+
+@public.route('/about',  methods = ['GET','POST'])
+def aboutt():
+    return render_template('about.html')
 
 class CustomView(BaseView):
     @expose('/')

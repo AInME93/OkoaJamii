@@ -73,24 +73,24 @@ def create_app(config_name):
     # org_admin.add_view(OrganizationModelView(Alert, db.session, menu_icon_type='fa', menu_icon_value='fa-exclamation-triangle', name="Alerable"))
     org_admin.add_view(CustomView(name="Custom", endpoint='custom_1', menu_icon_type='fa', menu_icon_value='fa-connectdevelop', ))
 
+
     with app.app_context():
         db.init_app(app)
         mail.init_app(app)
         # admin.init_app(app)
 
-    #
-    # with app.app_context():
-    #     user_role = Role(name='user')
-    #     super_user_role = Role(name='admin')
-    #     db.session.add(user_role)
-    #     db.session.add(super_user_role)
-    #     db.session.commit()
-    #
-    #     test_user = user_datastore.create_user(
-    #         first_name='Admin',
-    #         email='admin',
-    #         password='admin',
-    #         roles=[user_role, super_user_role]
-    #     )
+    """
+    with app.app_context():
+        user_role = Role(name='user')
+        super_user_role = Role(name ='admin')
+        db.session.add(user_role)
+        db.session.add(super_user_role)
+        db.session.commit()
 
+        test_user = user_datastore.create_user(
+        first_name = "Admin",
+        email = "admin",
+        password = "admin",
+        roles = [user_role,super_user_role]
+        )"""
     return app

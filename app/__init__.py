@@ -74,11 +74,11 @@ def create_app(config_name):
     org_admin.add_view(CustomView(name="Custom", endpoint='custom_1', menu_icon_type='fa', menu_icon_value='fa-connectdevelop', ))
 
 
-
     with app.app_context():
         db.init_app(app)
         mail.init_app(app)
         # admin.init_app(app)
+
     """
     with app.app_context():
         user_role = Role(name='user')

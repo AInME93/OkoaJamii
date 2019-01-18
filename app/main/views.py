@@ -2,23 +2,37 @@ from datetime import datetime
 
 from flask import render_template, request, flash
 from flask_admin import expose, BaseView, AdminIndexView
+from flask_mail import Message
 
 from app import db
 from app.models import Alert
 from app.forms import alertForm
 from app.main import public
 
+
 @public.route('/',  methods = ['GET','POST'])
 def index():
     form = alertForm()
 
     if request.method == 'POST' and form.validate():
-        alert = Alert(victimType =form.typeVictim.data, victimName = form.nameVictim.data, perpetratorName = form.perpetratorName, \
+        alert = Alert(victimType =form.typeVictim.data, victimName = form.nameVictim.data, perpetratorName = form.perpetratorName.data, \
                       reporterName=form.nameReporter.data, reporterPhone=form.phoneReporter.data, detailsCrime = form.crimeDetails.data, \
                       detailsPlace = form.placeDetails.data, county=form.victCounty.data, constituency =form.victConstituency.data, \
-                      ward = form.victWard, time=datetime.now(), status='new')
+                      ward = form.victWard.data, time=datetime.now(), status='new')
+
         db.session.add(alert)
-        db.session.commit
+
+        try:
+            db.session.commit
+        except:
+            db.session.rollback()
+
+        from app import mail
+
+        msg = Message(subject='no reply:New Crime Report!',
+                      body='We have received a new'+'email.', recipients=["imransaid247@gmail.com","imran.abdalla@students.jkuat.ac.ke"])
+
+        mail.send(msg)
 
         flash('Thank you for playing your role in saving a life!')
 
@@ -31,6 +45,18 @@ def contact():
 @public.route('/about')
 def about():
     return render_template('about.html')
+
+@public.route('/msg')
+def sendmessage():
+    from app import mail
+
+    msg = Message(subject='no reply:New Crime Report!',
+                  body='We have received a new' + ' email.', sender='user@gmail.com',
+                  recipients=["imransaid247@gmail.com", "imran.abdalla@students.jkuat.ac.ke"])
+
+    mail.send(msg)
+
+    return 'Thank you for the email'
 
 class CustomView(BaseView):
     @expose('/')

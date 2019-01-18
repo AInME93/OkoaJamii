@@ -9,6 +9,7 @@ from app.models import Alert
 from app.forms import alertForm
 from app.main import public
 
+
 @public.route('/',  methods = ['GET','POST'])
 def index():
     form = alertForm()

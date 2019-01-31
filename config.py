@@ -38,6 +38,7 @@ class Config:
     MAIL_USE_SSL = True
     MAIL_USERNAME = 'okoajamii11@gmail.com'
     MAIL_PASSWORD = 'hbthutmlegnfzchd'
+    MAIL_DEFAULT_SENDER = 'okoajamii11@gmail.com'
 
 
     @staticmethod

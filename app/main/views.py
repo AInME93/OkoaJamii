@@ -27,10 +27,24 @@ def index():
         except:
             db.session.rollback()
 
+
+        ward = form.victWard.data
+        constituency = form.victConstituency.data
+        type = form.typeVictim.data
+
         from app import mail
 
+        # msg = Message(subject='no reply:New Crime Report!',
+        #               html='<p> We have received a new report ' \
+        #               'from the following location: ' + form.victWard.data +', ' + form.victConstituency.data + '. \n' \
+        #               + 'The victim is a ' + form.typeVictim.data + '<p> \n' \
+        #               + '<form> <button type="submit" formaction="https://www.google.com">Open Case</button></form>',
+        #               recipients=["imransaid247@gmail.com"])
+
         msg = Message(subject='no reply:New Crime Report!',
-                      body='We have received a new'+'email.', recipients=["imransaid247@gmail.com","imran.abdalla@students.jkuat.ac.ke"])
+                      html=render_template('reportmail.html', ward=ward, constituency=constituency, type=type),
+                      recipients=["imransaid247@gmail.com"])
+
 
         mail.send(msg)
 
@@ -71,3 +85,7 @@ class MyAdminIndexView(AdminIndexView):
     @expose('/randomurlthatsoundscool')
     def randomurlthatsoundscool(self):
         return self.render('mailbox.html')
+
+    @expose('/manage')
+    def managedash(self):
+        return self.render('manage.html')

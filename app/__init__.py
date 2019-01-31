@@ -79,18 +79,19 @@ def create_app(config_name):
         mail.init_app(app)
         # admin.init_app(app)
 
-    """
-    with app.app_context():
-        user_role = Role(name='user')
-        super_user_role = Role(name ='admin')
-        db.session.add(user_role)
-        db.session.add(super_user_role)
-        db.session.commit()
+    #
+    # with app.app_context():
+    #     user_role = Role(name='user')
+    #     super_user_role = Role(name ='admin')
+    #     db.session.add(user_role)
+    #     db.session.add(super_user_role)
+    #     db.session.commit()
+    #
+    #     test_user = user_datastore.create_user(
+    #     first_name = "Admin",
+    #     email = "admin",
+    #     password = "admin",
+    #     roles = [user_role,super_user_role]
+    #     )
 
-        test_user = user_datastore.create_user(
-        first_name = "Admin",
-        email = "admin",
-        password = "admin",
-        roles = [user_role,super_user_role]
-        )"""
     return app

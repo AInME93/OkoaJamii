@@ -65,7 +65,7 @@ def create_app(config_name):
 
     # Add model views
     admin.add_view(MyModelView(Alert, db.session, menu_icon_type='fa', menu_icon_value='fa-exclamation-triangle', name="Alerts"))
-    admin.add_view(MyModelView(Role, db.session, menu_icon_type='fa', menu_icon_value='fa-server', name="Roles"))
+    admin.add_view(MyModelView(Role, db.session, menu_icon_type='fa', menu_icon_value='fa-black-tie', name="Roles"))
     admin.add_view(UserView(User, db.session, menu_icon_type='fa', menu_icon_value='fa-users', name="Users"))
     admin.add_view(CustomView(name="Custom view", endpoint='custom', menu_icon_type='fa', menu_icon_value='fa-connectdevelop', ))
 

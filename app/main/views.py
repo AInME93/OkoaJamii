@@ -78,6 +78,7 @@ class CustomView(BaseView):
         return self.render('admin/custom_index.html')
 
 class MyAdminIndexView(AdminIndexView):
+
     @expose('/mailbox')
     def mailboxMod(self):
         return self.render('mailbox.html')

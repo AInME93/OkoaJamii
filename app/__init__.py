@@ -9,10 +9,8 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-from app.models import User, Role, Alert
-from app.models import MyModelView, UserView, OrganizationModelView, UserViewOrg
+from app.models import User, Role, Alert, Case, MyModelView, UserView, CaseView, StaffView, Staff, RoleView, AlertView
 from app.main.views import MyAdminIndexView
-from app.organization.views import OrganizationAdminIndexView
 mail = Mail()
 
 
@@ -32,13 +30,13 @@ def create_app(config_name):
         template_mode='bootstrap3'
     )
 
-    org_admin = Admin(
-        app,
-        'Dashboard',
-        index_view= OrganizationAdminIndexView(url='/<org_name>/admin', endpoint='organization'),
-        base_template='my_master.html',
-        template_mode='bootstrap3'
-    )
+    # org_admin = Admin(
+    #     app,
+    #     'Dashboard',
+    #     index_view= OrganizationAdminIndexView(url='/<org_name>/admin', endpoint='organization'),
+    #     base_template='my_master.html',
+    #     template_mode='bootstrap3'
+    # )
 
     # Setup Flask-Security
     user_datastore = SQLAlchemyUserDatastore(db, User, Role)
@@ -64,14 +62,15 @@ def create_app(config_name):
     from app.main.views import CustomView
 
     # Add model views
-    admin.add_view(MyModelView(Alert, db.session, menu_icon_type='fa', menu_icon_value='fa-exclamation-triangle', name="Alerts"))
-    admin.add_view(MyModelView(Role, db.session, menu_icon_type='fa', menu_icon_value='fa-black-tie', name="Roles"))
-    admin.add_view(UserView(User, db.session, menu_icon_type='fa', menu_icon_value='fa-users', name="Users"))
-    admin.add_view(CustomView(name="Custom view", endpoint='custom', menu_icon_type='fa', menu_icon_value='fa-connectdevelop', ))
+    admin.add_view(AlertView(Alert, db.session, menu_icon_type='fa', menu_icon_value='fa-exclamation-triangle', name="Alerts"))
+    admin.add_view(RoleView(Role, db.session, menu_icon_type='fa', menu_icon_value='fa-black-tie', name="Roles"))
+    admin.add_view(UserView(User, db.session, menu_icon_type='fa', menu_icon_value='fa-user-circle', name="Users"))
+    admin.add_view(CaseView(Case, db.session, menu_icon_type='fa', menu_icon_value='fa-copy', name='Cases'))
+    admin.add_view(StaffView(Staff, db.session, menu_icon_type='fa', menu_icon_value='fa-users', name='Staff'))
 
-
+    # admin.add_view(CustomView(name="Custom view", endpoint='custom', menu_icon_type='fa', menu_icon_value='fa-connectdevelop', ))
     # org_admin.add_view(OrganizationModelView(Alert, db.session, menu_icon_type='fa', menu_icon_value='fa-exclamation-triangle', name="Alerable"))
-    org_admin.add_view(CustomView(name="Custom", endpoint='custom_1', menu_icon_type='fa', menu_icon_value='fa-connectdevelop', ))
+    # org_admin.add_view(CustomView(name="Custom", endpoint='custom_1', menu_icon_type='fa', menu_icon_value='fa-connectdevelop', ))
 
 
     with app.app_context():

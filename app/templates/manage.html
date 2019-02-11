@@ -1,0 +1,143 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+{{ super() }}
+
+{% if current_user.is_authenticated %}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+  <h1>
+    Custom View
+    <small>This is a new Dashboard... </small>
+  </h1>
+  <ol class="breadcrumb">
+    <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+    <li class="active">Manage</li>
+  </ol>
+</section>
+
+
+<section class="content">
+
+  <!-- quick email widget -->
+<div class="box box-info">
+    <div class="box-header">
+      <i class="fa fa-envelope"></i>
+
+      <h3 class="box-title">Manage Case</h3>
+      <!-- tools box -->
+      <div class="pull-right box-tools">
+        <button type="button" class="btn btn-info btn-sm" data-widget="remove" data-toggle="tooltip" title="Remove">
+          <i class="fa fa-times"></i></button>
+      </div>
+      <!-- /. tools -->
+  </div>
+  <div class="box-body">
+      <form action="#" method="post">
+        <div class="form-group">
+          <input type="email" class="form-control" name="emailto" placeholder="Email to:">
+      </div>
+      <div class="form-group">
+          <input type="text" class="form-control" name="subject" placeholder="Subject">
+      </div>
+      <div>
+          <textarea class="textarea" placeholder="Message" style="width: 100%; height: 125px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
+      </div>
+  </form>
+</div>
+<div class="box-footer clearfix">
+  <button type="button" class="pull-right btn btn-default" id="sendEmail">Send
+    <i class="fa fa-arrow-circle-right"></i></button>
+</div>
+</div>
+
+<!-- quick email widget -->
+<div class="box box-info">
+    <div class="box-header">
+      <i class="fa fa-envelope"></i>
+
+      <h3 class="box-title">Manage Staff</h3>
+      <!-- tools box -->
+      <div class="pull-right box-tools">
+        <button type="button" class="btn btn-info btn-sm" data-widget="remove" data-toggle="tooltip" title="Remove">
+          <i class="fa fa-times"></i></button>
+      </div>
+      <!-- /. tools -->
+  </div>
+  <div class="box-body">
+      <form action="#" method="post">
+        <div class="form-group">
+          <input type="email" class="form-control" name="emailto" placeholder="Email to:">
+      </div>
+      <div class="form-group">
+          <input type="text" class="form-control" name="subject" placeholder="Subject">
+      </div>
+      <div>
+          <textarea class="textarea" placeholder="Message" style="width: 100%; height: 125px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
+      </div>
+  </form>
+</div>
+<div class="box-footer clearfix">
+  <button type="button" class="pull-right btn btn-default" id="sendEmail">Send
+    <i class="fa fa-arrow-circle-right"></i></button>
+</div>
+</div>
+
+</section>
+
+<section class="content">
+
+  <div class="row">
+    <!-- Left col -->
+    <section class="container">      
+
+        CUSTOM DATA PLACED HERE
+        <br>
+        Here you can place your custom data without a database dependence. <br>
+        Find this file in templates/admin/ as manage.html
+
+      '<form> <button type="submit" formaction="https://www.google.com">Open Case</button></form>
+
+    </section>
+    <!-- /.Left col -->
+
+  </div>
+  <!-- /.row (main row) -->
+
+</section>
+<!-- /.content -->
+{% else %}
+
+<center>
+  <section class="content" style="color: white">
+    <div class="col-sm-12">
+      <h1>Flask-Admin example</h1>
+      <p class="lead">
+        Authentication
+      </p>
+      <p>
+        This example shows how you can use Flask-Admin in an admin template, <br> here I used AdminLTE and <a href="https://pythonhosted.org/Flask-Security/index.html" target="_blank">Flask-Security</a> for authentication.
+      </p>
+      {% if not current_user.is_authenticated %}
+      <p>You can register as a regular user, or log in as a superuser with the following credentials: <br><br>
+
+        email: <b>admin</b> <br>
+        password: <b>admin</b> <br>
+        <br>
+        <p>
+          <a class="btn btn-primary" href="{{ url_for('security.login') }}">Login</a> <a class="btn btn-default" href="{{ url_for('security.register') }}">Register</a>
+        </p>
+        {% endif %}
+        <br>
+        <p>
+          <a class="btn btn-primary" href="/"><i class="glyphicon glyphicon-chevron-left"></i> Back</a>
+        </p>
+      </div>
+    </section>
+  </center>
+
+  <br><br><br><br><br><br><br><br><br>
+  <br><br><br><br><br><br><br><br><br><br>
+  {% endif %}
+
+  {% endblock body %}

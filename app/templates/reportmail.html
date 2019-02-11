@@ -1,0 +1,18 @@
+{% extends 'layouts/layout1.html' %}
+
+{% block content %}
+{{ super() }}
+
+<div class="container">
+    <div class="row">
+        <p> We have received a new crime report! </p>
+        <p> The location of the incident is: {{ ward }}, {{ constituency }}</p>
+        <p> The victim is a {{ type }} </p>
+        <p> To view more details of the report, select option 'Open Case' below. </p>
+        <form>
+            <a href="https://www.google.com">Open Case</a>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

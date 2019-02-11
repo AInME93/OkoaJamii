@@ -11,6 +11,7 @@ class ExtendedRegisterForm(RegisterForm):
 
     def validate(self):
         """ Add username validation
+        #ha
 
             :return: True is the form is valid
         """

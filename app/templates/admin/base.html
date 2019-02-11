@@ -183,6 +183,7 @@
         {% block main_menu %}
         {{ layout.menu() }}
         {% endblock %}
+
         <li>
           <a href="/admin/mailbox">
             <i class="fa fa-envelope"></i> <span>Mailbox</span>
@@ -228,6 +229,18 @@
             <li><a href="#"><i class="fa fa-circle-o"></i> Level One</a></li>
           </ul>
         </li>
+
+        <li>
+          <a href="/admin/manage">
+            <i class="fa fa-tasks"></i> <span>Manage</span>
+            <span class="pull-right-container">
+              <small class="label pull-right bg-yellow">12</small>
+              <small class="label pull-right bg-green">16</small>
+              <small class="label pull-right bg-red">5</small>
+            </span>
+          </a>
+        </li>
+
       </ul>
     </section>
     <!-- /.sidebar -->

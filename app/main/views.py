@@ -60,6 +60,12 @@ def contact():
 def aboutt():
     return render_template('about.html')
 
+"""
+@public.route('/chart',  methods = ['GET','POST'])
+def chart():
+
+    return render_template('chartstest.html')"""
+
 @public.route('/msg')
 def sendmessage():
     from app import mail
@@ -76,6 +82,34 @@ class CustomView(BaseView):
     @expose('/')
     def index(self):
         return self.render('admin/custom_index.html')
+
+    @expose('/test')
+    def get_all_alerts(self):
+        alerts = Alert.query.all()
+        return self.render('admin/custom_index2.html',alerts=alerts)
+    
+    @expose('/chart')
+    def pie(self):
+        mvita_cases  = 0
+        kisauni_cases = 0
+        likoni_cases = 0
+        nyali_cases = 0
+
+        alerts = Alert.query.all()
+        for alert in alerts:
+            if alert.constituency == "Mvita":
+                mvita_cases += 1
+            elif alert.constituency == "Kisauni":
+                kisauni_cases += 1
+            elif alert.constituency == "Likoni":
+                likoni_cases += 1
+            else:
+                nyali_cases += 1
+
+        labels = ["Mvita","Kisauni","Likoni","Nyali"]
+        values = [mvita_cases,kisauni_cases,likoni_cases,nyali_cases]
+        colors = [ "#F7464A", "#46BFBD", "#FDB45C", "#FEDCBA" ]
+        return self.render('admin/chart.html', values=values, labels=labels, colors=colors)
 
 class MyAdminIndexView(AdminIndexView):
     @expose('/mailbox')

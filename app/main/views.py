@@ -88,8 +88,8 @@ class CustomView(BaseView):
         alerts = Alert.query.all()
         return self.render('admin/custom_index2.html',alerts=alerts)
     
-    @expose('/chart')
-    def pie(self):
+    @expose('/sub_county')
+    def sub_county(self):
         mvita_cases  = 0
         kisauni_cases = 0
         likoni_cases = 0
@@ -109,7 +109,27 @@ class CustomView(BaseView):
         labels = ["Mvita","Kisauni","Likoni","Nyali"]
         values = [mvita_cases,kisauni_cases,likoni_cases,nyali_cases]
         colors = [ "#F7464A", "#46BFBD", "#FDB45C", "#FEDCBA" ]
-        return self.render('admin/chart.html', values=values, labels=labels, colors=colors)
+        return self.render('admin/sub_county.html', values=values, labels=labels, colors=colors)
+
+    @expose('/case_type')
+    def case_type(self):
+        woman  = 0
+        child = 0
+        disability = 0
+
+        alerts = Alert.query.all()
+        for alert in alerts:
+            if alert.victimType == "Woman":
+                woman += 1
+            elif alert.victimType == "Person living with disability.":
+                disability += 1
+            else:
+                child += 1
+
+        labels = ["Woman","Person living with disability","Child"]
+        values = [woman,disability,child]
+        colors = [ "#F7464A", "#46BFBD", "#FDB45C" ]
+        return self.render('admin/case_type.html', values=values, labels=labels, colors=colors)
 
 class MyAdminIndexView(AdminIndexView):
     @expose('/mailbox')

@@ -87,9 +87,13 @@ class CustomView(BaseView):
     def get_all_alerts(self):
         alerts = Alert.query.all()
         return self.render('admin/custom_index2.html',alerts=alerts)
-    
-    @expose('/sub_county')
-    def sub_county(self):
+
+    @expose('/analysis')
+    def analysis(self):
+        return self.render('admin/custom_index3.html')
+
+    @expose('/subcounty')
+    def subcounty(self):
         mvita_cases  = 0
         kisauni_cases = 0
         likoni_cases = 0
@@ -111,8 +115,8 @@ class CustomView(BaseView):
         colors = [ "#F7464A", "#46BFBD", "#FDB45C", "#FEDCBA" ]
         return self.render('admin/sub_county.html', values=values, labels=labels, colors=colors)
 
-    @expose('/case_type')
-    def case_type(self):
+    @expose('/casetype')
+    def casetype(self):
         woman  = 0
         child = 0
         disability = 0

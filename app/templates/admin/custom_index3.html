@@ -20,48 +20,13 @@
 
   <div class="row">
     <!-- Left col -->
-    <section class="container">      
-    <table class="table">
-    <thead class="thead-inverse">
-      <tr>
-        <th>Victim Type</th>
-        <th>Victim Name</th>
-        <th>Perpetrator Name</th>
-        <th>Location</th>
-        <th> Reporter Phone</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for alert in alerts %}
-        <tr>
-          <td>
-           {{ alert.victimType }}
-           </td>
-           <td>
-          <td>
-           {{ alert.victimName }}
-           </td>
-           <td>
-           {{ alert.perpetratorName }}
-           </td>
-           <td>
-           {{ alert.location }}
-          </td>
-          <td>
-           {{ alert.reporterPhone }}
-          </td>
-
-        </tr>
-      {% endfor %}
-    </tbody>
-</table>
-
+    <section class="container" style="text-align: center;">
+      <p><a href="{{ url_for('custom.subcounty') }}" class="small-box-footer">Per County<i></i></a></p><br>
+      <p><a href="{{ url_for('custom.casetype') }}" class="small-box-footer">Per Case Type<i></i></a></p>      
     </section>
     <!-- /.Left col -->
-
   </div>
   <!-- /.row (main row) -->
-
 </section>
 <!-- /.content -->
 {% else %}

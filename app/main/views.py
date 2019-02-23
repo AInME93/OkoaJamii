@@ -52,12 +52,12 @@ def index():
 
     return render_template('index.html', form = form)
 
-@public.route('/contact',  methods = ['GET','POST'])
+@public.route('/contact')
 def contact():
     return render_template('contact.html')
 
-@public.route('/about',  methods = ['GET','POST'])
-def aboutt():
+@public.route('/about')
+def about():
     return render_template('about.html')
 
 """

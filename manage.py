@@ -1,5 +1,15 @@
 #!/usr/bin/env python
 import os
+import os.path as op
+
+file_path = op.join(op.dirname(__file__), 'files')
+try:
+    os.mkdir(file_path)
+except OSError:
+    pass
+
+
+
 from app import create_app, db
 from app.models import User, Role
 from flask_script import Manager, Shell, Server
@@ -10,8 +20,10 @@ manager = Manager(app)
 migrate = Migrate(app, db)
 server = Server(host='localhost', port=5002)
 
+
 #The make_shell_context() function registers the application and database instances and the models
 # so that they are automatically imported into the shell
+
 def make_shell_context():
     return dict(app=app, db=db, User = User, Role = Role)
 

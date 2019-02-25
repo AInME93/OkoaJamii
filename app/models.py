@@ -1,14 +1,17 @@
 from flask import url_for, request, render_template, helpers, flash
-from flask_admin import expose
+from flask_admin import expose, form
+from flask_admin.model.template import EndpointLinkRowAction
 from flask_security import UserMixin, RoleMixin, current_user, LoginForm, login_user, logout_user, url_for_security
 from werkzeug.exceptions import abort
 from werkzeug.utils import redirect
 
 from flask_admin.contrib import sqla
+
 from app import db
 
 
 # Define models
+
 roles_users = db.Table('roles_users',
         db.Column('user_id', db.Integer(), db.ForeignKey('User.id')),
         db.Column('role_id', db.Integer(), db.ForeignKey('Role.id')))
@@ -18,6 +21,9 @@ class Role(db.Model, RoleMixin):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(80), unique=True)
     description = db.Column(db.String(255))
+
+    def __str__(self):
+        return self.name
 
 class User(db.Model, UserMixin):
     __tablename__ = "User"
@@ -31,6 +37,9 @@ class User(db.Model, UserMixin):
 
     roles = db.relationship('Role', secondary=roles_users,
                             backref=db.backref('users', lazy='dynamic'))
+
+    def __str__(self):
+        return self.username
 
 
 class Alert(db.Model):
@@ -52,6 +61,13 @@ class Alert(db.Model):
     time = db.Column(db.DateTime())
     status = db.Column(db.String(255))
 
+    def __str__(self):
+        return self.name
+
+case_staff = db.Table('case_staff',
+        db.Column('case_id', db.Integer(), db.ForeignKey('Case.id')),
+        db.Column('role_id', db.Integer(), db.ForeignKey('Staff.id')))
+
 class Case(db.Model):
     __tablename__ = "Case"
     id = db.Column(db.Integer, primary_key=True)
@@ -70,13 +86,22 @@ class Case(db.Model):
     location = db.Column(db.String(255))
     time = db.Column(db.DateTime())
     stage = db.Column(db.String(255))
-    files = db.Column(db.LargeBinary)
+    files = db.Column(db.LargeBinary, nullable=True)
+
+    assignedStaff = db.relationship('Staff', secondary=case_staff,
+                            backref=db.backref('staff', lazy='dynamic'))
+
+    def __str__(self):
+        return self.id + ' ' + self.victimName
+
 
 class Person(db.Model):
     __tablename__ = "Person"
     id = db.Column(db.Integer, primary_key=True)
     Type = db.Column(db.String(255))
-    personName = db.Column(db.String(255))
+    personFirstName = db.Column(db.String(255))
+    personSecondName = db.Column(db.String(255))
+    personLastName = db.Column(db.String(255))
     identification = db.Column(db.String(255))
     DOB = db.Column(db.DateTime())
     photo = db.Column(db.LargeBinary)
@@ -85,6 +110,11 @@ class Person(db.Model):
     phoneNo2 = db.Column(db.String(255))
     occupation = db.Column(db.String(255))
     caseCount = db.Column(db.Integer)
+
+    def __str__(self):
+        return self.personFirstName + ' ' + self.personSecondName + ' ' + self.personLastName
+
+
 
 class Organization(db.Model):
     __tablename__ = "Organization"
@@ -97,6 +127,10 @@ class Organization(db.Model):
     registered = db.Column(db.DateTime())
     alertCount = db.Column(db.Integer)
 
+    def __str__(self):
+        return self.orgName
+
+
 class Staff(db.Model):
     __tablename__ = "Staff"
     id = db.Column(db.Integer, primary_key=True)
@@ -108,11 +142,15 @@ class Staff(db.Model):
     staffDesignation = db.Column(db.String(255))
     identification = db.Column(db.String(255))
     DOB = db.Column(db.DateTime())
-    photo = db.Column(db.LargeBinary)
+    photo = db.Column(db.LargeBinary, nullable=True)
     gender = db.Column(db.String(255))
     phoneNo1 = db.Column(db.String(255))
     phoneNo2 = db.Column(db.String(255))
     caseCount = db.Column(db.Integer)
+
+    def __str__(self):
+        return self.staffFirstName + ' ' + self.staffLastName
+
 
 # Create customized model view class
 class MyModelView(sqla.ModelView):
@@ -138,7 +176,8 @@ class MyModelView(sqla.ModelView):
                 # login
                 return redirect(url_for('security.login', next=request.url))
 
-
+    edit_modal_template = 'admin/edit.html'
+    details_modal_template = "admin/details.html"
     # can_edit = True
     edit_modal = True
     create_modal = True
@@ -149,55 +188,129 @@ class MyModelView(sqla.ModelView):
     @expose('/mailbox')
     def mailboxMod(self):
         return self.render('mailbox.html')
+
+class AlertView(MyModelView):
+    column_searchable_list = ['victimName', 'victimType', 'perpetratorName', 'ward', 'constituency', 'county']
+    column_labels = dict(victimName = 'Victim', victimType = 'Type', perpetratorName = 'Perpetrator',\
+                         reporterName = 'Reporter', reporterPhone = 'Reporter #', detailsCrime ='Details', \
+                         detailsPlace = 'Place Description', county = 'County', constituency = 'Constituency', \
+                         ward = 'Ward',urgency = 'Urgency', choiceOrganization = 'Organization')
+    column_filters = column_searchable_list
+
+    # form_widget_args = {
+    #     'victimName': {'rows': 100,
+    #                 'placeholder': 'ex. M132 or T456'
+    #                 }
+    #             }
+
+class RoleView(MyModelView):
+    column_editable_list = ['name']
+    column_searchable_list = column_editable_list
+    column_filters = column_editable_list
 
 class UserView(MyModelView):
-    column_editable_list = ['email']
+    column_editable_list = ['email', 'username']
     column_searchable_list = column_editable_list
     column_exclude_list = ['password']
-    # form_excluded_columns = column_exclude_list
+    form_excluded_columns = column_exclude_list
     column_details_exclude_list = column_exclude_list
     column_filters = column_editable_list
+    column_extra_row_actions = [
+        EndpointLinkRowAction('fa fa-plus', 'user.action_play')
+    ]
+    column_auto_select_related = True
 
-# Create customized model view class
-class OrganizationModelView(sqla.ModelView):
+    @expose('/action/play', methods=('GET',))
+    def action_play(self, *args, **kwargs):
+        return self.handle_action()
 
-    def is_accessible(self):
-        if not current_user.is_active or not current_user.is_authenticated:
-            return False
-
-        if current_user.has_role('admin'):
-            return True
-
-        return False
-
-    def _handle_view(self, name, **kwargs):
-        """
-        Override builtin _handle_view in order to redirect users when a view is not accessible.
-        """
-        if not self.is_accessible():
-            if current_user.is_authenticated:
-                # permission denied
-                abort(403)
-            else:
-                # login
-                return redirect(url_for('security.login', next=request.url))
-
-
-    # can_edit = True
-    edit_modal = True
-    create_modal = True
-    can_export = True
-    can_view_details = True
-    details_modal = True
-
-    @expose('/mailbox')
-    def mailboxMod(self):
-        return self.render('mailbox.html')
-
-class UserViewOrg(OrganizationModelView):
-    column_editable_list = ['email']
+class StaffView(MyModelView):
+    column_editable_list = ['staffFirstName']
     column_searchable_list = column_editable_list
-    column_exclude_list = ['password']
-    # form_excluded_columns = column_exclude_list
+    column_filters = column_editable_list
+    column_labels = dict(Stafffirstname = 'First Name', Staffsecondname = 'Middle Name',Stafflastname = 'Last Name',\
+                         Staffdesignation = 'Designation', Dob = 'Date of Birth')
+
+
+    # form_overrides = {
+    #     'photo': request.files['fileimg'].read(),
+    # }
+
+    # def on_model_change(self, form, model, is_created = False):
+    #     model.photo = bytes(model.photo, 'utf-8')
+    #     pass
+    #
+    # def after_model_change(self, form, model, is_created):
+    #     if is_created:
+    #         # newUser = User(email = form.email.data, password = 'newpassword')
+    #         model.photo = str(model.photo, 'utf-8')
+    #         # db.session.add(newUser)
+    #         # db.session.commit()
+    #
+    #     else:
+    #         model.photo = str(model.photo, 'utf-8')
+
+
+class CaseView(MyModelView):
+    column_editable_list = ['victimType']
+    column_searchable_list = column_editable_list
+    column_exclude_list = ['assignedOrganization','location']
+    form_excluded_columns = column_exclude_list
     column_details_exclude_list = column_exclude_list
     column_filters = column_editable_list
+    column_extra_row_actions = [
+        EndpointLinkRowAction('fa fa-plus', 'case.action_play')
+    ]
+
+    column_labels = dict(victimName = 'Victim', victimType = 'Type', perpetratorName = 'Perpetrator',\
+                         reporterName = 'Reporter', reporterPhone = 'Reporter #', detailsCrime ='Details', \
+                         detailsPlace = 'Place Description', county = 'County', constituency = 'Constituency', \
+                         ward = 'Ward',urgency = 'Urgency', choiceOrganization = 'Organization')
+
+    @expose('/action/play', methods=('GET',))
+    def action_play(self, *args, **kwargs):
+        return self.handle_action()
+
+# # Create customized model view class
+# class OrganizationModelView(sqla.ModelView):
+#
+#     def is_accessible(self):
+#         if not current_user.is_active or not current_user.is_authenticated:
+#             return False
+#
+#         if current_user.has_role('admin'):
+#             return True
+#
+#         return False
+#
+#     def _handle_view(self, name, **kwargs):
+#         """
+#         Override builtin _handle_view in order to redirect users when a view is not accessible.
+#         """
+#         if not self.is_accessible():
+#             if current_user.is_authenticated:
+#                 # permission denied
+#                 abort(403)
+#             else:
+#                 # login
+#                 return redirect(url_for('security.login', next=request.url))
+#
+#
+#     # can_edit = True
+#     edit_modal = True
+#     create_modal = True
+#     can_export = True
+#     can_view_details = True
+#     details_modal = True
+#
+#     @expose('/mailbox')
+#     def mailboxMod(self):
+#         return self.render('mailbox.html')
+#
+# class UserViewOrg(OrganizationModelView):
+#     column_editable_list = ['email']
+#     column_searchable_list = column_editable_list
+#     column_exclude_list = ['password']
+#     # form_excluded_columns = column_exclude_list
+#     column_details_exclude_list = column_exclude_list
+#     column_filters = column_editable_list

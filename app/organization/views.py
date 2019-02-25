@@ -8,15 +8,15 @@ from app import db
 from app.models import Organization
 from app.organization import private
 
-class CustomViewOrg(BaseView):
-    @expose('/')
-    def __init__(self, *args, **kwargs):
-        self._default_view = True
-        super(CustomViewOrg, self).__init__(*args, **kwargs)
-        self.admin = Admin()
-
-    def index(self, org_name):
-        return self.render('admin/custom_index.html')
+# class CustomViewOrg(BaseView):
+#     @expose('/')
+#     def __init__(self, *args, **kwargs):
+#         self._default_view = True
+#         super(CustomViewOrg, self).__init__(*args, **kwargs)
+#         self.admin = Admin()
+#
+#     def index(self, org_name):
+#         return self.render('admin/custom_index.html')
 
 class OrganizationAdminIndexView(AdminIndexView):
     @expose('/mailbox')
@@ -26,4 +26,3 @@ class OrganizationAdminIndexView(AdminIndexView):
 @private.route('/<org_name>')
 def organizationindex(org_name):
     return '<a href="/<org_name>/admin">Go To Admin</a>'
-

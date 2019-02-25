@@ -136,6 +136,7 @@ class CustomView(BaseView):
         return self.render('admin/case_type.html', values=values, labels=labels, colors=colors)
 
 class MyAdminIndexView(AdminIndexView):
+
     @expose('/mailbox')
     def mailboxMod(self):
         return self.render('mailbox.html')

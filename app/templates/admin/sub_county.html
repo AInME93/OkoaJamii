@@ -1,14 +1,17 @@
 {% extends 'admin/master.html' %}
 {% block body %}
 {{ super() }}
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.3.0/Chart.js"></script>
+<script src="static/Chart.min.js"></script>
+<link href="{{url_for('static',filename='static/js/chart.min.js')}}" rel="stylesheet"></link>
+
 
 {% if current_user.is_authenticated %}
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
-  <h1>
-    Custom View 
-    <small>This is a custom view without DB model</small>
+  <h1 style="color: blue;text-align: center;">
+    <a href="{{ url_for('custom.analysis') }}">Back to Analysis Page</a>
   </h1>
   <ol class="breadcrumb">
     <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
@@ -16,54 +19,32 @@
   </ol>
 </section>
 
+
 <section class="content">
+<canvas id="pie-chart" width="250" height="100"></canvas>
 
-  <div class="row">
-    <!-- Left col -->
-    <section class="container">      
-    <table class="table">
-    <thead class="thead-inverse">
-      <tr>
-        <th>Victim Type</th>
-        <th>Victim Name</th>
-        <th>Perpetrator Name</th>
-        <th>Location</th>
-        <th> Reporter Phone</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for alert in alerts %}
-        <tr>
-          <td>
-           {{ alert.victimType }}
-           </td>
-           <td>
-          <td>
-           {{ alert.victimName }}
-           </td>
-           <td>
-           {{ alert.perpetratorName }}
-           </td>
-           <td>
-           {{ alert.location }}
-          </td>
-          <td>
-           {{ alert.reporterPhone }}
-          </td>
-
-        </tr>
-      {% endfor %}
-    </tbody>
-</table>
-
-    </section>
-    <!-- /.Left col -->
-
-  </div>
-  <!-- /.row (main row) -->
-
+<script>
+    new Chart(document.getElementById("pie-chart"), {
+         type: 'pie',
+          data: {
+            labels: {{labels | tojson}},
+            datasets: [{
+              label: "Pie Chart",
+              backgroundColor: {{colors | tojson}},
+            data: {{values | tojson}}
+            }]
+          },
+          options: {
+            title: {
+              display: true,
+              text: 'Cases depending on the Sub-Counties'
+            }
+          }
+        });
+</script>
 </section>
 <!-- /.content -->
+
 {% else %}
 
 <center>

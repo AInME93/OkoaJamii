@@ -52,12 +52,12 @@ def index():
 
     return render_template('index.html', form = form)
 
-@public.route('/contact',  methods = ['GET','POST'])
+@public.route('/contact')
 def contact():
     return render_template('contact.html')
 
-@public.route('/about',  methods = ['GET','POST'])
-def aboutt():
+@public.route('/about')
+def about():
     return render_template('about.html')
 
 """
@@ -87,9 +87,13 @@ class CustomView(BaseView):
     def get_all_alerts(self):
         alerts = Alert.query.all()
         return self.render('admin/custom_index2.html',alerts=alerts)
-    
-    @expose('/chart')
-    def pie(self):
+
+    @expose('/analysis')
+    def analysis(self):
+        return self.render('admin/custom_index3.html')
+
+    @expose('/subcounty')
+    def subcounty(self):
         mvita_cases  = 0
         kisauni_cases = 0
         likoni_cases = 0
@@ -109,7 +113,27 @@ class CustomView(BaseView):
         labels = ["Mvita","Kisauni","Likoni","Nyali"]
         values = [mvita_cases,kisauni_cases,likoni_cases,nyali_cases]
         colors = [ "#F7464A", "#46BFBD", "#FDB45C", "#FEDCBA" ]
-        return self.render('admin/chart.html', values=values, labels=labels, colors=colors)
+        return self.render('admin/sub_county.html', values=values, labels=labels, colors=colors)
+
+    @expose('/casetype')
+    def casetype(self):
+        woman  = 0
+        child = 0
+        disability = 0
+
+        alerts = Alert.query.all()
+        for alert in alerts:
+            if alert.victimType == "Woman":
+                woman += 1
+            elif alert.victimType == "Person living with disability.":
+                disability += 1
+            else:
+                child += 1
+
+        labels = ["Woman","Person living with disability","Child"]
+        values = [woman,disability,child]
+        colors = [ "#F7464A", "#46BFBD", "#FDB45C" ]
+        return self.render('admin/case_type.html', values=values, labels=labels, colors=colors)
 
 class MyAdminIndexView(AdminIndexView):
     @expose('/mailbox')

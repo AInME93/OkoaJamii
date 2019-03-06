@@ -16,6 +16,7 @@ roles_users = db.Table('roles_users',
         db.Column('user_id', db.Integer(), db.ForeignKey('User.id')),
         db.Column('role_id', db.Integer(), db.ForeignKey('Role.id')))
 
+
 class Role(db.Model, RoleMixin):
     __tablename__ = "Role"
     id = db.Column(db.Integer(), primary_key=True)
@@ -24,6 +25,7 @@ class Role(db.Model, RoleMixin):
 
     def __str__(self):
         return self.name
+
 
 class User(db.Model, UserMixin):
     __tablename__ = "User"
@@ -176,8 +178,8 @@ class MyModelView(sqla.ModelView):
                 # login
                 return redirect(url_for('security.login', next=request.url))
 
-    edit_modal_template = 'admin/edit.html'
-    details_modal_template = "admin/details.html"
+    # edit_modal_template = 'admin/edit.html'
+    # details_modal_template = "admin/details.html"
     # can_edit = True
     edit_modal = True
     create_modal = True
@@ -208,6 +210,8 @@ class RoleView(MyModelView):
     column_searchable_list = column_editable_list
     column_filters = column_editable_list
 
+
+
 class UserView(MyModelView):
     column_editable_list = ['email', 'username']
     column_searchable_list = column_editable_list
@@ -226,10 +230,10 @@ class UserView(MyModelView):
 
 class StaffView(MyModelView):
     column_editable_list = ['staffFirstName']
-    column_searchable_list = column_editable_list
+    # column_searchable_list = column_editable_list
     column_filters = column_editable_list
-    column_labels = dict(Stafffirstname = 'First Name', Staffsecondname = 'Middle Name',Stafflastname = 'Last Name',\
-                         Staffdesignation = 'Designation', Dob = 'Date of Birth')
+    column_labels = dict(staffFirstName='First Name', staffSecondName = 'Middle Name', staffLastName = 'Last Name',\
+                         staffDesignation = 'Designation', DOB = 'Date of Birth')
 
 
     # form_overrides = {

@@ -1,0 +1,13 @@
+{% extends 'admin/model/list.html' %}
+{% block list_row_actions %}
+    {{ super() }}
+    <form class="icon" method="POST" action="/admin/alert/action/">
+
+        <input id="action" name="action" value="pick_case" type="hidden">
+        <input name="rowid" value="{{ get_pk_value(row) }}" type="hidden">
+        <button onclick="return confirm('Are you sure you want to pick alert and open new case?');" title="Pick Case">
+          <span class="fa fa-thumb-tack"></span>
+        </button>
+
+    </form>
+{% endblock %}

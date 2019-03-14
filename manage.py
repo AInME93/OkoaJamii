@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 import os
-import os.path as op
-
-file_path = op.join(op.dirname(__file__), 'files')
-try:
-    os.mkdir(file_path)
-except OSError:
-    pass
-
+# import os.path as op
+#
+# file_path = op.join(op.dirname(__file__), 'files')
+# try:
+#     os.mkdir(file_path)
+# except OSError:
+#     pass
 
 
 from app import create_app, db

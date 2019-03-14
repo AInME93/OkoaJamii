@@ -41,7 +41,7 @@ def index():
         #               + '<form> <button type="submit" formaction="https://www.google.com">Open Case</button></form>',
         #               recipients=["imransaid247@gmail.com"])
 
-        msg = Message(subject='no reply:New Crime Report!',
+        msg = Message(subject='No Reply : New Crime Report!',
                       html=render_template('reportmail.html', ward=ward, constituency=constituency, type=type),
                       recipients=["imransaid247@gmail.com"])
 
@@ -72,7 +72,7 @@ def sendmessage():
 
     msg = Message(subject='no reply:New Crime Report!',
                   body='We have received a new' + ' email.', sender='user@gmail.com',
-                  recipients=["imransaid247@gmail.com", "imran.abdalla@students.jkuat.ac.ke"])
+                  recipients=["imransaid247@gmail.com"])
 
     mail.send(msg)
 
@@ -83,6 +83,21 @@ class CustomView(BaseView):
     def index(self):
         return self.render('admin/custom_index.html')
 
+
+class MyAdminIndexView(AdminIndexView):
+
+    @expose('/mailbox')
+    def mailboxMod(self):
+        return self.render('mailbox.html')
+
+    @expose('/randomurlthatsoundscool')
+    def randomurlthatsoundscool(self):
+        return self.render('mailbox.html')
+
+    @expose('/manage')
+    def managedash(self):
+        return self.render('manage.html')
+
     @expose('/test')
     def get_all_alerts(self):
         alerts = Alert.query.all()
@@ -92,7 +107,7 @@ class CustomView(BaseView):
     def analysis(self):
         return self.render('admin/custom_index3.html')
 
-    @expose('/subcounty')
+    @expose('/analysis/subcounty')
     def subcounty(self):
         mvita_cases  = 0
         kisauni_cases = 0
@@ -115,7 +130,7 @@ class CustomView(BaseView):
         colors = [ "#F7464A", "#46BFBD", "#FDB45C", "#FEDCBA" ]
         return self.render('admin/sub_county.html', values=values, labels=labels, colors=colors)
 
-    @expose('/casetype')
+    @expose('/analysis/casetype')
     def casetype(self):
         woman  = 0
         child = 0
@@ -134,17 +149,3 @@ class CustomView(BaseView):
         values = [woman,disability,child]
         colors = [ "#F7464A", "#46BFBD", "#FDB45C" ]
         return self.render('admin/case_type.html', values=values, labels=labels, colors=colors)
-
-class MyAdminIndexView(AdminIndexView):
-
-    @expose('/mailbox')
-    def mailboxMod(self):
-        return self.render('mailbox.html')
-
-    @expose('/randomurlthatsoundscool')
-    def randomurlthatsoundscool(self):
-        return self.render('mailbox.html')
-
-    @expose('/manage')
-    def managedash(self):
-        return self.render('manage.html')

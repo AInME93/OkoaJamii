@@ -1,5 +1,9 @@
+from datetime import datetime
+from gettext import ngettext, gettext
+
 from flask import url_for, request, render_template, helpers, flash
 from flask_admin import expose, form
+from flask_admin.actions import action
 from flask_admin.model.template import EndpointLinkRowAction
 from flask_security import UserMixin, RoleMixin, current_user, LoginForm, login_user, logout_user, url_for_security
 from werkzeug.exceptions import abort
@@ -190,6 +194,10 @@ class MyModelView(sqla.ModelView):
         return self.render('mailbox.html')
 
 class AlertView(MyModelView):
+
+    def get_query(self):
+        return self.session.query(self.model).filter(self.model.status != 'assigned')
+
     column_searchable_list = ['victimName', 'victimType', 'perpetratorName', 'ward', 'constituency', 'county']
     column_labels = dict(victimName = 'Victim', victimType = 'Type', perpetratorName = 'Perpetrator',\
                          reporterName = 'Reporter', reporterPhone = 'Reporter #', detailsCrime ='Details', \
@@ -202,6 +210,41 @@ class AlertView(MyModelView):
     #                 'placeholder': 'ex. M132 or T456'
     #                 }
     #             }
+    can_edit = False
+    can_create = False
+
+    @action('pick_case', 'Pick Case', 'Are you sure you want to pick this alert and create a new case?')
+    def action_pick_case(self, ids):
+        try:
+            alert = Alert.query.filter(Alert.id.in_(ids))
+
+            for alert in alert.all():
+                case = Case(victimType =alert.victimType,
+                            victimName = alert.victimName,
+                            perpetratorName= alert.perpetratorName,
+                            reporterName = alert.reporterName,
+                            reporterPhone = alert.reporterPhone,
+                            detailsCrime = alert.detailsCrime,
+                            detailsPlace = alert.detailsPlace,
+                            county = alert.county,
+                            constituency = alert.constituency,
+                            time = datetime.now())
+
+                db.session.add(case)
+                alert.status ='assigned'
+
+                try:
+                    db.session.commit
+                except:
+                    db.session.rollback()
+
+                flash('Case picked succesfully', 'message')
+
+        except Exception as ex:
+            print('Error encountered: ',ex)
+            flash('Failed to pick alert', 'error')
+
+    list_template = 'lists/alerts.html'
 
 class RoleView(MyModelView):
     column_editable_list = ['name']
@@ -209,20 +252,45 @@ class RoleView(MyModelView):
     column_filters = column_editable_list
 
 class UserView(MyModelView):
+
+    @action('approve', 'Approve', 'Are you sure you want to approve selected users?')
+    def action_approve(self, ids):
+        try:
+            query = User.query.filter(User.id.in_(ids))
+
+            # count = 0
+            # for user in query.all():
+            #     if user.approve():
+            #         count += 1
+            #
+            # flash(ngettext('User was successfully approved.',
+            #                '%(count)s users were successfully approved.',
+            #                count)
+            #                count=count)
+
+        except Exception as ex:
+            if not self.handle_view_exception(ex):
+                raise
+
+            flash(gettext('Failed to approve users. %(error)s', error=str(ex)), 'error')
+
     column_editable_list = ['email', 'username']
     column_searchable_list = column_editable_list
     column_exclude_list = ['password']
     form_excluded_columns = column_exclude_list
     column_details_exclude_list = column_exclude_list
     column_filters = column_editable_list
-    column_extra_row_actions = [
-        EndpointLinkRowAction('fa fa-plus', 'user.action_play')
-    ]
+    # column_extra_row_actions = [
+    #     EndpointLinkRowAction('fa fa-plus', 'user.action_play'),
+    # ]
     column_auto_select_related = True
+    list_template = 'lists/users.html'
 
-    @expose('/action/play', methods=('GET',))
-    def action_play(self, *args, **kwargs):
-        return self.handle_action()
+    # @expose('/action/play', methods=('GET','POST'))
+    # def action_play(self, *args, **kwargs):
+    #     flash('NEW')
+    #     return self.handle_action()
+    #
 
 class StaffView(MyModelView):
     column_editable_list = ['staffFirstName']
@@ -258,18 +326,13 @@ class CaseView(MyModelView):
     form_excluded_columns = column_exclude_list
     column_details_exclude_list = column_exclude_list
     column_filters = column_editable_list
-    column_extra_row_actions = [
-        EndpointLinkRowAction('fa fa-plus', 'case.action_play')
-    ]
 
     column_labels = dict(victimName = 'Victim', victimType = 'Type', perpetratorName = 'Perpetrator',\
                          reporterName = 'Reporter', reporterPhone = 'Reporter #', detailsCrime ='Details', \
                          detailsPlace = 'Place Description', county = 'County', constituency = 'Constituency', \
                          ward = 'Ward',urgency = 'Urgency', choiceOrganization = 'Organization')
 
-    @expose('/action/play', methods=('GET',))
-    def action_play(self, *args, **kwargs):
-        return self.handle_action()
+
 
 # # Create customized model view class
 # class OrganizationModelView(sqla.ModelView):

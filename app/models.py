@@ -25,9 +25,17 @@ class Role(db.Model, RoleMixin):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(80), unique=True)
     description = db.Column(db.String(255))
+    status = db.Column(db.Boolean())
+    created_at = db.Column(db.DateTime())
+    created_by = db.Column(db.Integer, db.ForeignKey('User.id'), default='1')
+    modified_at = db.Column(db.DateTime())
+    modified_by = db.Column(db.Integer, db.ForeignKey('User.id'), default='1')
+    deleted_at = db.Column(db.DateTime())
+    deleted_by = db.Column(db.Integer, db.ForeignKey('User.id'), default='1')
 
     def __str__(self):
         return self.name
+
 
 class User(db.Model, UserMixin):
     __tablename__ = "User"
@@ -38,6 +46,14 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(255))
     active = db.Column(db.Boolean())
     confirmed_at = db.Column(db.DateTime())
+    org_id = db.Column(db.Integer, db.ForeignKey('Organization.id'))
+    status = db.Column(db.Boolean())
+    created_at = db.Column(db.DateTime())
+    created_by = db.Column(db.Integer, db.ForeignKey('User.id'), default='1')
+    modified_at = db.Column(db.DateTime())
+    modified_by = db.Column(db.Integer, db.ForeignKey('User.id'), default='1')
+    deleted_at = db.Column(db.DateTime())
+    deleted_by = db.Column(db.Integer, db.ForeignKey('User.id'), default='1')
 
     roles = db.relationship('Role', secondary=roles_users,
                             backref=db.backref('users', lazy='dynamic'))
@@ -60,100 +76,195 @@ class Alert(db.Model):
     constituency = db.Column(db.String(255))
     ward = db.Column(db.String(255))
     urgency = db.Column(db.String(255))
-    choiceOrganization = db.Column(db.String(255))
     location = db.Column(db.String(255))
     time = db.Column(db.DateTime())
     status = db.Column(db.String(255))
+    org_id = db.Column(db.Integer, db.ForeignKey('Organization.id'))
+    created_by = db.Column(db.Integer, db.ForeignKey('User.id'))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_by = db.Column(db.Integer, db.ForeignKey('User.id'))
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
+    deleted_by = db.Column(db.Integer, db.ForeignKey('User.id'))
+    deleted_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __str__(self):
         return self.name
 
-case_staff = db.Table('case_staff',
-        db.Column('case_id', db.Integer(), db.ForeignKey('Case.id')),
-        db.Column('role_id', db.Integer(), db.ForeignKey('Staff.id')))
-
-class Case(db.Model):
-    __tablename__ = "Case"
-    id = db.Column(db.Integer, primary_key=True)
-    victimType = db.Column(db.String(255))
-    victimName = db.Column(db.String(255))
-    perpetratorName = db.Column(db.String(255))
-    reporterName = db.Column(db.String(255))
-    reporterPhone = db.Column(db.String(255))
-    detailsCrime = db.Column(db.String(1250))
-    detailsPlace = db.Column(db.String(1250))
-    county = db.Column(db.String(255))
-    constituency = db.Column(db.String(255))
-    urgency = db.Column(db.String(255))
-    type = db.Column(db.String(255))
-    assignedOrganization = db.Column(db.String(255))
-    location = db.Column(db.String(255))
-    time = db.Column(db.DateTime())
-    stage = db.Column(db.String(255))
-    files = db.Column(db.LargeBinary, nullable=True)
-
-    assignedStaff = db.relationship('Staff', secondary=case_staff,
-                            backref=db.backref('staff', lazy='dynamic'))
-
-    def __str__(self):
-        return self.id + ' ' + self.victimName
-
-
-class Person(db.Model):
-    __tablename__ = "Person"
-    id = db.Column(db.Integer, primary_key=True)
-    Type = db.Column(db.String(255))
-    personFirstName = db.Column(db.String(255))
-    personSecondName = db.Column(db.String(255))
-    personLastName = db.Column(db.String(255))
-    identification = db.Column(db.String(255))
-    DOB = db.Column(db.DateTime())
-    photo = db.Column(db.LargeBinary)
-    gender = db.Column(db.String(255))
-    phoneNo1 = db.Column(db.String(255))
-    phoneNo2 = db.Column(db.String(255))
-    occupation = db.Column(db.String(255))
-    caseCount = db.Column(db.Integer)
-
-    def __str__(self):
-        return self.personFirstName + ' ' + self.personSecondName + ' ' + self.personLastName
-
+# case_staff = db.Table('case_staff',
+#         db.Column('case_id', db.Integer(), db.ForeignKey('Case.id')),
+#         db.Column('role_id', db.Integer(), db.ForeignKey('Staff.id')))
 
 
 class Organization(db.Model):
     __tablename__ = "Organization"
     id = db.Column(db.Integer, primary_key=True)
     orgName = db.Column(db.String(255))
-    logo = db.Column(db.LargeBinary)
+    # logo = db.Column(db.LargeBinary)
     webURL = db.Column(db.String(255))
     orgBrief = db.Column(db.String(255))
     founded = db.Column(db.DateTime())
     registered = db.Column(db.DateTime())
     alertCount = db.Column(db.Integer)
 
+    status = db.Column(db.Boolean())
+    created_at = db.Column(db.DateTime())
+    created_by = db.Column(db.Integer, db.ForeignKey('User.id'), default='1')
+    modified_at = db.Column(db.DateTime())
+    modified_by = db.Column(db.Integer, db.ForeignKey('User.id'), default='1')
+    deleted_at = db.Column(db.DateTime())
+    deleted_by = db.Column(db.Integer, db.ForeignKey('User.id'), default='1')
+
     def __str__(self):
         return self.orgName
 
 
-class Staff(db.Model):
-    __tablename__ = "Staff"
+class Country(db.Model):
+    __tablename__ = "Country"
     id = db.Column(db.Integer, primary_key=True)
-    staffFirstName = db.Column(db.String(255))
-    staffSecondName = db.Column(db.String(255))
-    staffLastName = db.Column(db.String(255))
-    organization = db.Column(db.String(255))
-    password = db.Column(db.String(255))
-    staffDesignation = db.Column(db.String(255))
-    identification = db.Column(db.String(255))
-    DOB = db.Column(db.DateTime())
-    photo = db.Column(db.LargeBinary, nullable=True)
-    gender = db.Column(db.String(255))
-    phoneNo1 = db.Column(db.String(255))
-    phoneNo2 = db.Column(db.String(255))
-    caseCount = db.Column(db.Integer)
+    name = db.Column(db.String(255))
+    status = db.Column(db.String(255))
 
-    def __str__(self):
-        return self.staffFirstName + ' ' + self.staffLastName
+    created_by = db.Column(db.Integer, db.ForeignKey('User.id'), default='1')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_by = db.Column(db.Integer, db.ForeignKey('User.id'), default='1')
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
+    deleted_by = db.Column(db.Integer, db.ForeignKey('User.id'), default='1')
+    deleted_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class County(db.Model):
+    __tablename__ = "County"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255))
+    country_id = db.Column(db.Integer, db.ForeignKey('Country.id'))
+    status = db.Column(db.String(255))
+
+    created_by = db.Column(db.Integer, db.ForeignKey('User.id'), default='1')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_by = db.Column(db.Integer, db.ForeignKey('User.id'), default='1')
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
+    deleted_by = db.Column(db.Integer, db.ForeignKey('User.id'), default='1')
+    deleted_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class Constituency(db.Model):
+    __tablename__ = "Constituency"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255))
+    county_id = db.Column(db.Integer, db.ForeignKey('County.id'))
+    status = db.Column(db.String(255))
+
+    created_by = db.Column(db.Integer, db.ForeignKey('User.id'), default='1')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_by = db.Column(db.Integer, db.ForeignKey('User.id'), default='1')
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
+    deleted_by = db.Column(db.Integer, db.ForeignKey('User.id'), default='1')
+    deleted_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class Ward(db.Model):
+    __tablename__ = "Ward"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255))
+    constituency_id = db.Column(db.Integer, db.ForeignKey('Constituency.id'))
+    status = db.Column(db.String(255))
+
+    created_by = db.Column(db.Integer, db.ForeignKey('User.id'), default='1')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_by = db.Column(db.Integer, db.ForeignKey('User.id'), default='1')
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
+    deleted_by = db.Column(db.Integer, db.ForeignKey('User.id'), default='1')
+    deleted_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+# class Case(db.Model):
+#     __tablename__ = "Case"
+#     id = db.Column(db.Integer, primary_key=True)
+#     victimType = db.Column(db.String(255))
+#     victimName = db.Column(db.String(255))
+#     perpetratorName = db.Column(db.String(255))
+#     reporterName = db.Column(db.String(255))
+#     reporterPhone = db.Column(db.String(255))
+#     detailsCrime = db.Column(db.String(1250))
+#     detailsPlace = db.Column(db.String(1250))
+#     county = db.Column(db.String(255))
+#     constituency = db.Column(db.String(255))
+#     urgency = db.Column(db.String(255))
+#     type = db.Column(db.String(255))
+#     assignedOrganization = db.Column(db.String(255))
+#     location = db.Column(db.String(255))
+#     time = db.Column(db.DateTime())
+#     stage = db.Column(db.String(255))
+#     # files = db.Column(db.LargeBinary, nullable=True)
+#
+#     status = db.Column(db.Boolean())
+#     created_at = db.Column(db.DateTime())
+#     created_by = db.Column(db.Integer, db.ForeignKey('User.id'), default='1')
+#     modified_at = db.Column(db.DateTime())
+#     modified_by = db.Column(db.Integer, db.ForeignKey('User.id'), default='1')
+#     deleted_at = db.Column(db.DateTime())
+#     deleted_by = db.Column(db.Integer, db.ForeignKey('User.id'), default='1')
+#
+#
+#     assignedStaff = db.relationship('Staff', secondary=case_staff,
+#                             backref=db.backref('staff', lazy='dynamic'))
+#
+#     def __str__(self):
+#         return self.id + ' ' + self.victimName
+#
+# class Person(db.Model):
+#     __tablename__ = "Person"
+#     id = db.Column(db.Integer, primary_key=True)
+#     Type = db.Column(db.String(255))
+#     personFirstName = db.Column(db.String(255))
+#     personSecondName = db.Column(db.String(255))
+#     personLastName = db.Column(db.String(255))
+#     identification = db.Column(db.String(255))
+#     DOB = db.Column(db.DateTime())
+#     photo = db.Column(db.LargeBinary)
+#     gender = db.Column(db.String(255))
+#     phoneNo1 = db.Column(db.String(255))
+#     phoneNo2 = db.Column(db.String(255))
+#     occupation = db.Column(db.String(255))
+#     caseCount = db.Column(db.Integer)
+#
+#     status = db.Column(db.Boolean())
+#     created_at = db.Column(db.DateTime())
+#     created_by = db.Column(db.Integer, db.ForeignKey('User.id'), default='1')
+#     modified_at = db.Column(db.DateTime())
+#     modified_by = db.Column(db.Integer, db.ForeignKey('User.id'), default='1')
+#     deleted_at = db.Column(db.DateTime())
+#     deleted_by = db.Column(db.Integer, db.ForeignKey('User.id'), default='1')
+#
+#     def __str__(self):
+#         return self.personFirstName + ' ' + self.personSecondName + ' ' + self.personLastName
+#
+# class Staff(db.Model):
+#     __tablename__ = "Staff"
+#     id = db.Column(db.Integer, primary_key=True)
+#     staffFirstName = db.Column(db.String(255))
+#     staffSecondName = db.Column(db.String(255))
+#     staffLastName = db.Column(db.String(255))
+#     organization = db.Column(db.String(255))
+#     password = db.Column(db.String(255))
+#     staffDesignation = db.Column(db.String(255))
+#     identification = db.Column(db.String(255))
+#     DOB = db.Column(db.DateTime())
+#     photo = db.Column(db.LargeBinary, nullable=True)
+#     gender = db.Column(db.String(255))
+#     phoneNo1 = db.Column(db.String(255))
+#     phoneNo2 = db.Column(db.String(255))
+#     caseCount = db.Column(db.Integer)
+#
+#     status = db.Column(db.Boolean())
+#     created_at = db.Column(db.DateTime())
+#     created_by = db.Column(db.Integer, db.ForeignKey('User.id'), default='1')
+#     modified_at = db.Column(db.DateTime())
+#     modified_by = db.Column(db.Integer, db.ForeignKey('User.id'), default='1')
+#     deleted_at = db.Column(db.DateTime())
+#     deleted_by = db.Column(db.Integer, db.ForeignKey('User.id'), default='1')
+#
+#     def __str__(self):
+#         return self.staffFirstName + ' ' + self.staffLastName
 
 
 # Create customized model view class
@@ -196,13 +307,14 @@ class MyModelView(sqla.ModelView):
 class AlertView(MyModelView):
 
     def get_query(self):
-        return self.session.query(self.model).filter(self.model.status != 'assigned')
+        return self.session.query(self.model).filter(self.model.status != 'assigned', self.model.org_id == 1)
 
     column_searchable_list = ['victimName', 'victimType', 'perpetratorName', 'ward', 'constituency', 'county']
     column_labels = dict(victimName = 'Victim', victimType = 'Type', perpetratorName = 'Perpetrator',\
                          reporterName = 'Reporter', reporterPhone = 'Reporter #', detailsCrime ='Details', \
                          detailsPlace = 'Place Description', county = 'County', constituency = 'Constituency', \
-                         ward = 'Ward',urgency = 'Urgency', choiceOrganization = 'Organization')
+                         ward = 'Ward',urgency = 'Urgency', org_id = 'organization')
+
     column_filters = column_searchable_list
 
     # form_widget_args = {
@@ -219,19 +331,21 @@ class AlertView(MyModelView):
             alert = Alert.query.filter(Alert.id.in_(ids))
 
             for alert in alert.all():
-                case = Case(victimType =alert.victimType,
-                            victimName = alert.victimName,
-                            perpetratorName= alert.perpetratorName,
-                            reporterName = alert.reporterName,
-                            reporterPhone = alert.reporterPhone,
-                            detailsCrime = alert.detailsCrime,
-                            detailsPlace = alert.detailsPlace,
-                            county = alert.county,
-                            constituency = alert.constituency,
-                            time = datetime.now())
-
-                db.session.add(case)
+                # case = Case(victimType =alert.victimType,
+                #             victimName = alert.victimName,
+                #             perpetratorName= alert.perpetratorName,
+                #             reporterName = alert.reporterName,
+                #             reporterPhone = alert.reporterPhone,
+                #             detailsCrime = alert.detailsCrime,
+                #             detailsPlace = alert.detailsPlace,
+                #             county = alert.county,
+                #             constituency = alert.constituency,
+                #             time = datetime.now())
+                #
+                # db.session.add(case)
                 alert.status ='assigned'
+                alert.updated_at = datetime.now()
+                alert.updated_by = current_user.id
 
                 try:
                     db.session.commit
@@ -292,13 +406,18 @@ class UserView(MyModelView):
     #     return self.handle_action()
     #
 
-class StaffView(MyModelView):
-    column_editable_list = ['staffFirstName']
-    column_searchable_list = column_editable_list
-    column_filters = column_editable_list
-    column_labels = dict(Stafffirstname = 'First Name', Staffsecondname = 'Middle Name',Stafflastname = 'Last Name',\
-                         Staffdesignation = 'Designation', Dob = 'Date of Birth')
+class OrgView(MyModelView):
+    column_exclude_list = ['alertCount']
+    form_excluded_columns = column_exclude_list
 
+
+# class StaffView(MyModelView):
+#     column_editable_list = ['staffFirstName']
+#     column_searchable_list = column_editable_list
+#     column_filters = column_editable_list
+#     column_labels = dict(Stafffirstname = 'First Name', Staffsecondname = 'Middle Name',Stafflastname = 'Last Name',\
+#                          Staffdesignation = 'Designation', Dob = 'Date of Birth')
+#
 
     # form_overrides = {
     #     'photo': request.files['fileimg'].read(),
@@ -319,19 +438,18 @@ class StaffView(MyModelView):
     #         model.photo = str(model.photo, 'utf-8')
 
 
-class CaseView(MyModelView):
-    column_editable_list = ['victimType']
-    column_searchable_list = column_editable_list
-    column_exclude_list = ['assignedOrganization','location']
-    form_excluded_columns = column_exclude_list
-    column_details_exclude_list = column_exclude_list
-    column_filters = column_editable_list
-
-    column_labels = dict(victimName = 'Victim', victimType = 'Type', perpetratorName = 'Perpetrator',\
-                         reporterName = 'Reporter', reporterPhone = 'Reporter #', detailsCrime ='Details', \
-                         detailsPlace = 'Place Description', county = 'County', constituency = 'Constituency', \
-                         ward = 'Ward',urgency = 'Urgency', choiceOrganization = 'Organization')
-
+# class CaseView(MyModelView):
+#     column_editable_list = ['victimType']
+#     column_searchable_list = column_editable_list
+#     column_exclude_list = ['assignedOrganization','location']
+#     form_excluded_columns = column_exclude_list
+#     column_details_exclude_list = column_exclude_list
+#     column_filters = column_editable_list
+#
+#     column_labels = dict(victimName = 'Victim', victimType = 'Type', perpetratorName = 'Perpetrator',\
+#                          reporterName = 'Reporter', reporterPhone = 'Reporter #', detailsCrime ='Details', \
+#                          detailsPlace = 'Place Description', county = 'County', constituency = 'Constituency', \
+#                          ward = 'Ward',urgency = 'Urgency', choiceOrganization = 'Organization')
 
 
 # # Create customized model view class

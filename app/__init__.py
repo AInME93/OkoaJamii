@@ -9,7 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-from app.models import User, Role, Alert, Case, MyModelView, UserView, CaseView, StaffView, Staff, RoleView, AlertView
+from app.models import User, Role, Alert, Organization, MyModelView, UserView, RoleView, AlertView, OrgView
 from app.main.views import MyAdminIndexView
 mail = Mail()
 
@@ -65,8 +65,10 @@ def create_app(config_name):
     admin.add_view(AlertView(Alert, db.session, menu_icon_type='fa', menu_icon_value='fa-exclamation-triangle', name="Alerts"))
     admin.add_view(RoleView(Role, db.session, menu_icon_type='fa', menu_icon_value='fa-black-tie', name="Roles"))
     admin.add_view(UserView(User, db.session, menu_icon_type='fa', menu_icon_value='fa-user-circle', name="Users"))
-    admin.add_view(CaseView(Case, db.session, menu_icon_type='fa', menu_icon_value='fa-copy', name='Cases'))
-    admin.add_view(StaffView(Staff, db.session, menu_icon_type='fa', menu_icon_value='fa-users', name='Staff'))
+    admin.add_view(OrgView(Organization, db.session, menu_icon_type='fa', menu_icon_value='fa-sitemap', name='Organization'))
+    # admin.add_view(CaseView(Case, db.session, menu_icon_type='fa', menu_icon_value='fa-copy', name='Cases'))
+    # admin.add_view(StaffView(Staff, db.session, menu_icon_type='fa', menu_icon_value='fa-users', name='Staff'))
+
 
     # admin.add_view(CustomView(name="Custom view", endpoint='custom', menu_icon_type='fa', menu_icon_value='fa-connectdevelop', ))
     # org_admin.add_view(OrganizationModelView(Alert, db.session, menu_icon_type='fa', menu_icon_value='fa-exclamation-triangle', name="Alerable"))

@@ -5,7 +5,7 @@ from flask_admin import expose, BaseView, AdminIndexView
 from flask_mail import Message
 
 from app import db
-from app.models import Alert
+from app.models import Alert,User,Role
 from app.forms import alertForm
 from app.main import public
 
@@ -19,8 +19,11 @@ def index():
                       reporterName=form.nameReporter.data, reporterPhone=form.phoneReporter.data, detailsCrime = form.crimeDetails.data, \
                       detailsPlace = form.placeDetails.data, county=form.victCounty.data, constituency =form.victConstituency.data, \
                       ward = form.victWard.data, time=datetime.now(), status='new')
-
         db.session.add(alert)
+        print("Hizi zote ni za nini?")
+        
+
+
 
         try:
             db.session.commit
@@ -83,11 +86,23 @@ class CustomView(BaseView):
     def index(self):
         return self.render('admin/custom_index.html')
 
-    @expose('/test')
+    @expose('/alerts', methods=('GET', 'POST'))
     def get_all_alerts(self):
         alerts = Alert.query.all()
-        return self.render('admin/custom_index2.html',alerts=alerts)
-    
+        return self.render('admin/alerts.html',alerts=alerts)
+
+    @expose('/users', methods=('GET', 'POST'))
+    def get_all_users(self):
+        users = User.query.all()
+        return self.render('admin/users.html',users =users )
+
+
+    @expose('/roles', methods=('GET', 'POST'))
+    def get_all_roles(self):
+        roles = Role.query.all()
+        return self.render('admin/roles.html',roles =roles )
+
+
     @expose('/sub_county')
     def sub_county(self):
         mvita_cases  = 0

@@ -7,8 +7,8 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
   <h1>
-    Custom View 
-    <small>This is a custom view without DB model</small>
+    Roles
+    <small><i>This is a list of all the roles</i></small>
   </h1>
   <ol class="breadcrumb">
     <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
@@ -24,30 +24,22 @@
       <table class="table">
         <thead class="thead-inverse">
           <tr>
-            <th>Victim Type</th>
-            <th>Victim Name</th>
-            <th>Perpetrator Name</th>
-            <th>Location</th>
-            <th> Reporter Phone</th>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Description</th>
           </tr>
         </thead>
         <tbody>
-          {% for alert in alerts %}
+          {% for role in roles %}
           <tr>
             <td>
-              {{ alert.victimType }}
+            {{ role.id }}
             </td>
             <td>
-              {{ alert.victimName }}
+              {{ role.name }}
             </td>
             <td>
-              {{ alert.perpetratorName }}
-            </td>
-            <td>
-              {{ alert.location }}
-            </td>
-            <td>
-            {{ alert.reporterPhone }}
+              {{ role.description }}
             </td>
           </tr>
           {% endfor %}
@@ -56,8 +48,9 @@
     </section>
     <!-- /.Left col -->
   </div>
-  <!-- /.row (main row) -->
 </section>
+
+
 <!-- /.content -->
 {% else %}
 

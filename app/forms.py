@@ -3,7 +3,7 @@ from flask_wtf import Form
 from wtforms import BooleanField, validators, StringField, TextField, SelectField, TextAreaField, SubmitField
 from wtforms.fields.html5 import EmailField, TelField
 
-from app.models import User
+from app.models import user
 
 
 class ExtendedRegisterForm(RegisterForm):
@@ -21,9 +21,9 @@ class ExtendedRegisterForm(RegisterForm):
             return False
 
         # Check if username already exists
-        user = User.query.filter_by(
+        user_ = user.query.filter_by(
             username=self.username.data).first()
-        if user is not None:
+        if user_ is not None:
             # Text displayed to the user
             self.username.errors.append('Username already exists. Try a unique name that best describes you, like LadiesMan01.')
             return False

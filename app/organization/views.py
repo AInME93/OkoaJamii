@@ -5,7 +5,7 @@ from flask_admin import expose, BaseView, AdminIndexView, Admin
 from flask_security import LoginForm
 
 from app import db
-from app.models import Organization
+from app.models import organization
 from app.organization import private
 
 # class CustomViewOrg(BaseView):

@@ -5,17 +5,18 @@ from flask_admin import expose, BaseView, AdminIndexView
 from flask_mail import Message
 
 from app import db
-from app.models import Alert
+from app.models import crimeAlert, country, county, constituency, ward
 from app.forms import alertForm
 from app.main import public
 
 
 @public.route('/',  methods = ['GET','POST'])
 def index():
+
     form = alertForm()
 
     if request.method == 'POST' and form.validate():
-        alert = Alert(victimType =form.typeVictim.data, victimName = form.nameVictim.data, perpetratorName = form.perpetratorName.data, \
+        alert = crimeAlert(victimType =form.typeVictim.data, victimName = form.nameVictim.data, perpetratorName = form.perpetratorName.data, \
                       reporterName=form.nameReporter.data, reporterPhone=form.phoneReporter.data, detailsCrime = form.crimeDetails.data, \
                       detailsPlace = form.placeDetails.data, county=form.victCounty.data, constituency =form.victConstituency.data, \
                       ward = form.victWard.data, time=datetime.now(), status='new')
@@ -100,7 +101,7 @@ class MyAdminIndexView(AdminIndexView):
 
     @expose('/test')
     def get_all_alerts(self):
-        alerts = Alert.query.all()
+        alerts = crimeAlert.query.all()
         return self.render('admin/custom_index2.html',alerts=alerts)
 
     @expose('/analysis')
@@ -114,7 +115,7 @@ class MyAdminIndexView(AdminIndexView):
         likoni_cases = 0
         nyali_cases = 0
 
-        alerts = Alert.query.all()
+        alerts = crimeAlert.query.all()
         for alert in alerts:
             if alert.constituency == "Mvita":
                 mvita_cases += 1
@@ -136,7 +137,7 @@ class MyAdminIndexView(AdminIndexView):
         child = 0
         disability = 0
 
-        alerts = Alert.query.all()
+        alerts = crimeAlert.query.all()
         for alert in alerts:
             if alert.victimType == "Woman":
                 woman += 1
@@ -149,3 +150,12 @@ class MyAdminIndexView(AdminIndexView):
         values = [woman,disability,child]
         colors = [ "#F7464A", "#46BFBD", "#FDB45C" ]
         return self.render('admin/case_type.html', values=values, labels=labels, colors=colors)
+
+
+def populate_form_choices(registration_form):
+    countries = country.query.all()
+    counties = county.query.all()
+    constituencies = constituency.query.all()
+    wards = ward.query.all()
+
+

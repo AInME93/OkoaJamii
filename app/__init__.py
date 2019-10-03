@@ -10,7 +10,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-from app.models import user, role, crimeAlert, organization, MyModelView, UserView, RoleView, AlertView, OrgView
+from app.models import user, role, crimealert, organization, MyModelView, UserView, RoleView, AlertView, OrgView
 from app.main.views import MyAdminIndexView
 mail = Mail()
 
@@ -63,7 +63,7 @@ def create_app(config_name):
     from app.main.views import CustomView
 
     # Add model views
-    admin.add_view(AlertView(crimeAlert, db.session, menu_icon_type='fa', menu_icon_value='fa-exclamation-triangle', name="Alerts"))
+    admin.add_view(AlertView(crimealert, db.session, menu_icon_type='fa', menu_icon_value='fa-exclamation-triangle', name="Alerts"))
     admin.add_view(RoleView(role, db.session, menu_icon_type='fa', menu_icon_value='fa-black-tie', name="Roles"))
     admin.add_view(UserView(user, db.session, menu_icon_type='fa', menu_icon_value='fa-user-circle', name="Users"))
     # admin.add_view(OrgView(organization, db.session, menu_icon_type='fa', menu_icon_value='fa-sitemap', name='Organization'))
@@ -79,6 +79,6 @@ def create_app(config_name):
     with app.app_context():
         db.init_app(app)
         mail.init_app(app)
-        # admin.init_app(app)
+        # admin.init_app(app)F
 
     return app

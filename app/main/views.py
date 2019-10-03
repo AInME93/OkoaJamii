@@ -5,20 +5,30 @@ from flask_admin import expose, BaseView, AdminIndexView
 from flask_mail import Message
 
 from app import db
-from app.models import crimeAlert, country, county, constituency, ward
+from app.models import constituency, ward
+from app.models import crimealert, country, county
 from app.forms import alertForm
 from app.main import public
-
 
 @public.route('/',  methods = ['GET','POST'])
 def index():
 
     form = alertForm()
 
+    counties = county.query.all()
+    constituencies = constituency.query.all()
+    wards = ward.query.all()
+
+    form.victCounty.choices = [("","County")] + [(county.name, county.name) for county in counties]
+    form.victConstituency.choices = [("","Constituency")] + [(constituency.name, constituency.name) for constituency in constituencies]
+    form.victWard.choices = [("","Ward")] + [(ward.name, ward.name) for ward in wards]
+
     if request.method == 'POST' and form.validate():
-        alert = crimeAlert(victimType =form.typeVictim.data, victimName = form.nameVictim.data, perpetratorName = form.perpetratorName.data, \
+        return
+
+        alert = crimealert(victimType =form.typeVictim.data, victimName = form.nameVictim.data, perpetratorName = form.perpetratorName.data, \
                       reporterName=form.nameReporter.data, reporterPhone=form.phoneReporter.data, detailsCrime = form.crimeDetails.data, \
-                      detailsPlace = form.placeDetails.data, county=form.victCounty.data, constituency =form.victConstituency.data, \
+                      detailsPlace = form.placeDetails.data, country=147, county=form.victCounty.data, constituency = form.victConstituency.data, \
                       ward = form.victWard.data, time=datetime.now(), status='new')
 
         db.session.add(alert)
@@ -27,12 +37,6 @@ def index():
             db.session.commit
         except:
             db.session.rollback()
-
-
-        ward = form.victWard.data
-        constituency = form.victConstituency.data
-        type = form.typeVictim.data
-
         from app import mail
 
         # msg = Message(subject='no reply:New Crime Report!',
@@ -101,7 +105,7 @@ class MyAdminIndexView(AdminIndexView):
 
     @expose('/test')
     def get_all_alerts(self):
-        alerts = crimeAlert.query.all()
+        alerts = crimealert.query.all()
         return self.render('admin/custom_index2.html',alerts=alerts)
 
     @expose('/analysis')
@@ -115,7 +119,7 @@ class MyAdminIndexView(AdminIndexView):
         likoni_cases = 0
         nyali_cases = 0
 
-        alerts = crimeAlert.query.all()
+        alerts = crimealert.query.all()
         for alert in alerts:
             if alert.constituency == "Mvita":
                 mvita_cases += 1
@@ -137,7 +141,7 @@ class MyAdminIndexView(AdminIndexView):
         child = 0
         disability = 0
 
-        alerts = crimeAlert.query.all()
+        alerts = crimealert.query.all()
         for alert in alerts:
             if alert.victimType == "Woman":
                 woman += 1
@@ -152,10 +156,10 @@ class MyAdminIndexView(AdminIndexView):
         return self.render('admin/case_type.html', values=values, labels=labels, colors=colors)
 
 
-def populate_form_choices(registration_form):
-    countries = country.query.all()
-    counties = county.query.all()
-    constituencies = constituency.query.all()
-    wards = ward.query.all()
+# def populate_form_choices(registration_form):
+#     countries = country.query.all()
+#     counties = county.query.all()
+#     constituencies = constituency.query.all()
+#     wards = ward.query.all()
 
 

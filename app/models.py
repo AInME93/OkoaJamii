@@ -62,8 +62,8 @@ class user(db.Model, UserMixin):
         return self.username
 
 
-class crimeAlert(db.Model):
-    __tablename__ = "alert"
+class crimealert(db.Model):
+    __tablename__ = "crimealert"
     id = db.Column(db.Integer, primary_key=True)
     victimType = db.Column(db.String(255))
     victimName = db.Column(db.String(255))
@@ -339,7 +339,7 @@ class AlertView(MyModelView):
     @action('pick_case', 'Pick Case', 'Are you sure you want to pick this alert and create a new case?')
     def action_pick_case(self, ids):
         try:
-            query = crimeAlert.query.filter(crimeAlert.id.in_(ids))
+            query = crimealert.query.filter(crimealert.id.in_(ids))
 
             for alert in query.all():
                 # case = Case(victimType =alert.victimType,

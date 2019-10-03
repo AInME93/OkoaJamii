@@ -1,5 +1,5 @@
 from flask_security import RegisterForm
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from wtforms import BooleanField, validators, StringField, TextField, SelectField, TextAreaField, SubmitField
 from wtforms.fields.html5 import EmailField, TelField
 
@@ -7,6 +7,7 @@ from app.models import user
 
 
 class ExtendedRegisterForm(RegisterForm):
+
     username = StringField('Username',[validators.DataRequired(message='username is required')])
 
     def validate(self):
@@ -16,7 +17,7 @@ class ExtendedRegisterForm(RegisterForm):
             :return: True is the form is valid
         """
         # Use standard validator
-        validation = Form.validate(self)
+        validation = FlaskForm.validate(self)
         if not validation:
             return False
 
@@ -32,7 +33,8 @@ class ExtendedRegisterForm(RegisterForm):
 
     remember = BooleanField('Remember Me')
 
-class alertForm(Form):
+class alertForm(FlaskForm):
+
     nameVictim = TextField("Name Of Victim")
     perpetratorName = TextField("Name of Perpetrator")
     typeVictim = SelectField("Type of Victim", choices = [('','Type of Victim'),('Woman', 'Woman'),
@@ -40,16 +42,10 @@ class alertForm(Form):
                                                           ('Person living with disability.','Person living with disability.')], validators = [validators.Required()])
     nameReporter = TextField("Your Name(Optional)")
     phoneReporter = TelField("Your Phone Number (Optional)")
-    victCounty = SelectField("County", choices = [('','County'),('Mombasa', 'Mombasa'),
-                                              ('Kilifi', 'Kilifi'),
-                                              ('Kwale', 'Kwale')])
-    victConstituency = SelectField("Constituency", choices = [('','Constituency'),('Kisauni', 'Kisauni'),
-                                                          (' Changamwe', ' Changamwe'),
-                                                          ('Jomvu', 'Jomvu'),
-                                                          ('Nyali', 'Nyali'),
-                                                          ('Likoni', 'Likoni'),
-                                                          ('Mvita', 'Mvita')])
-    victWard = SelectField("Ward", choices=[('','Ward'), ('Mjambere','Mjambere')])
+    victCountry = SelectField()
+    victCounty = SelectField()
+    victConstituency = SelectField()
+    victWard = SelectField()
     crimeDetails = TextAreaField("Please describe the crime/incident in detail")
     placeDetails = TextAreaField("Please describe the place where the crime is committed in detail")
     submit = SubmitField("Report Anonymously")

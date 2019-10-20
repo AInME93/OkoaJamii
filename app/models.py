@@ -26,12 +26,12 @@ class role(db.Model, RoleMixin):
     name = db.Column(db.String(80), unique=True)
     description = db.Column(db.String(255))
     status = db.Column(db.Boolean())
-    created_at = db.Column(db.DateTime())
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
     created_by = db.Column(db.Integer, db.ForeignKey('user.id'), default='1')
     modified_at = db.Column(db.DateTime())
-    modified_by = db.Column(db.Integer, db.ForeignKey('user.id'), default='1')
+    modified_by = db.Column(db.Integer, db.ForeignKey('user.id'))
     deleted_at = db.Column(db.DateTime())
-    deleted_by = db.Column(db.Integer, db.ForeignKey('user.id'), default='1')
+    deleted_by = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __str__(self):
         return self.name
@@ -49,11 +49,12 @@ class user(db.Model, UserMixin):
     org_id = db.Column(db.Integer, db.ForeignKey('organization.id'))
     status = db.Column(db.Boolean())
     created_at = db.Column(db.DateTime())
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
     created_by = db.Column(db.Integer, db.ForeignKey('user.id'), default='1')
     modified_at = db.Column(db.DateTime())
-    modified_by = db.Column(db.Integer, db.ForeignKey('user.id'), default='1')
+    modified_by = db.Column(db.Integer, db.ForeignKey('user.id'))
     deleted_at = db.Column(db.DateTime())
-    deleted_by = db.Column(db.Integer, db.ForeignKey('user.id'), default='1')
+    deleted_by = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     roles = db.relationship('role', secondary=roles_users,
                             backref=db.backref('users', lazy='dynamic'))
@@ -83,9 +84,13 @@ class crimealert(db.Model):
     created_by = db.Column(db.Integer, db.ForeignKey('user.id'))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_by = db.Column(db.Integer, db.ForeignKey('user.id'))
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime())
     deleted_by = db.Column(db.Integer, db.ForeignKey('user.id'))
-    deleted_at = db.Column(db.DateTime, default=datetime.utcnow)
+    deleted_at = db.Column(db.DateTime())
+
+    county_ = db.relationship('county', backref=db.backref('crimealert', lazy='dynamic'))
+    constituency_ = db.relationship('constituency', backref=db.backref('crimealert', lazy='dynamic'))
+    ward_ = db.relationship('ward', backref=db.backref('crimealert', lazy='dynamic'))
 
     def __str__(self):
         return self.VictimType + ' ' + self.ward + '-' + self.time
@@ -102,18 +107,19 @@ class organization(db.Model):
     # logo = db.Column(db.LargeBinary)
     webURL = db.Column(db.String(255))
     orgBrief = db.Column(db.String(255))
+    email = db.Column(db.String(255))
     founded = db.Column(db.DateTime())
     registered = db.Column(db.DateTime())
     alertCount = db.Column(db.Integer)
     address = db.Column(db.String(255))
 
     status = db.Column(db.Boolean())
-    created_at = db.Column(db.DateTime())
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
     created_by = db.Column(db.Integer, db.ForeignKey('user.id'), default='1')
     modified_at = db.Column(db.DateTime())
-    modified_by = db.Column(db.Integer, db.ForeignKey('user.id'), default='1')
+    modified_by = db.Column(db.Integer, db.ForeignKey('user.id'))
     deleted_at = db.Column(db.DateTime())
-    deleted_by = db.Column(db.Integer, db.ForeignKey('user.id'), default='1')
+    deleted_by = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __str__(self):
         return self.orgName
@@ -125,12 +131,12 @@ class country(db.Model):
     name = db.Column(db.String(255))
     status = db.Column(db.String(255))
 
-    created_by = db.Column(db.Integer, db.ForeignKey('user.id'), default='1')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_by = db.Column(db.Integer, db.ForeignKey('user.id'), default='1')
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
-    deleted_by = db.Column(db.Integer, db.ForeignKey('user.id'), default='1')
-    deleted_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_by = db.Column(db.Integer, db.ForeignKey('user.id'), default='1')
+    modified_at = db.Column(db.DateTime())
+    modified_by = db.Column(db.Integer, db.ForeignKey('user.id'))
+    deleted_at = db.Column(db.DateTime())
+    deleted_by = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __str__(self):
         return self.name
@@ -142,12 +148,12 @@ class county(db.Model):
     country_id = db.Column(db.Integer, db.ForeignKey('country.id'))
     status = db.Column(db.String(255))
 
-    created_by = db.Column(db.Integer, db.ForeignKey('user.id'), default='1')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_by = db.Column(db.Integer, db.ForeignKey('user.id'), default='1')
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
-    deleted_by = db.Column(db.Integer, db.ForeignKey('user.id'), default='1')
-    deleted_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_by = db.Column(db.Integer, db.ForeignKey('user.id'), default='1')
+    modified_at = db.Column(db.DateTime())
+    modified_by = db.Column(db.Integer, db.ForeignKey('user.id'))
+    deleted_at = db.Column(db.DateTime())
+    deleted_by = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __str__(self):
         return self.name
@@ -160,12 +166,12 @@ class constituency(db.Model):
     county_id = db.Column(db.Integer, db.ForeignKey('county.id'))
     status = db.Column(db.String(255))
 
-    created_by = db.Column(db.Integer, db.ForeignKey('user.id'), default='1')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_by = db.Column(db.Integer, db.ForeignKey('user.id'), default='1')
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
-    deleted_by = db.Column(db.Integer, db.ForeignKey('user.id'), default='1')
-    deleted_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_by = db.Column(db.Integer, db.ForeignKey('user.id'), default='1')
+    modified_at = db.Column(db.DateTime())
+    modified_by = db.Column(db.Integer, db.ForeignKey('user.id'))
+    deleted_at = db.Column(db.DateTime())
+    deleted_by = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __str__(self):
         return self.name
@@ -177,12 +183,12 @@ class ward(db.Model):
     constituency_id = db.Column(db.Integer, db.ForeignKey('constituency.id'))
     status = db.Column(db.String(255))
 
-    created_by = db.Column(db.Integer, db.ForeignKey('user.id'), default='1')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_by = db.Column(db.Integer, db.ForeignKey('user.id'), default='1')
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
-    deleted_by = db.Column(db.Integer, db.ForeignKey('user.id'), default='1')
-    deleted_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_by = db.Column(db.Integer, db.ForeignKey('user.id'), default='1')
+    modified_at = db.Column(db.DateTime())
+    modified_by = db.Column(db.Integer, db.ForeignKey('user.id'))
+    deleted_at = db.Column(db.DateTime())
+    deleted_by = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __str__(self):
         return self.name
@@ -290,6 +296,11 @@ class MyModelView(sqla.ModelView):
 
         return False
 
+    def inaccessible_callback(self, name, **kwargs):
+        if not self.is_accessible():
+            return redirect(url_for('new'))
+
+
     def _handle_view(self, name, **kwargs):
         """
         Override builtin _handle_view in order to redirect users when a view is not accessible.
@@ -320,13 +331,16 @@ class AlertView(MyModelView):
     def get_query(self):
         return self.session.query(self.model).filter(self.model.status != 'assigned', self.model.org_id == 1)
 
-    column_searchable_list = ['victimName', 'victimType', 'perpetratorName', 'ward', 'constituency', 'county']
+    column_list = ['victimName', 'victimType', 'perpetratorName','reporterName', 'reporterPhone', 'detailsCrime', 'detailsPlace', \
+                   'county_', 'constituency_.name', 'ward_', 'urgency', 'status', 'org_id']
+    column_searchable_list = ['victimName', 'victimType', 'perpetratorName', 'ward_.name', 'constituency_.name', 'county_.name']
     column_labels = dict(victimName = 'Victim', victimType = 'Type', perpetratorName = 'Perpetrator',\
                          reporterName = 'Reporter', reporterPhone = 'Reporter #', detailsCrime ='Details', \
                          detailsPlace = 'Place Description', county = 'County', constituency = 'Constituency', \
                          ward = 'Ward',urgency = 'Urgency', org_id = 'organization')
 
     column_filters = column_searchable_list
+    column_select_related_list = ['county_']
 
     # form_widget_args = {
     #     'victimName': {'rows': 100,

@@ -1,8 +1,11 @@
 from datetime import datetime
 
-from flask import render_template, request, flash
+from flask import render_template, request, flash, url_for
 from flask_admin import expose, BaseView, AdminIndexView
+from flask_admin.actions import action
+from flask_login import current_user
 from flask_mail import Message
+from werkzeug.utils import redirect
 
 from app import db
 from app.models import constituency, ward
@@ -14,30 +17,45 @@ from app.main import public
 def index():
 
     form = alertForm()
+    form.victCounty.choices =[('', "County")]+[(str(c.id), c.name) for c in county.query.order_by('name').all()]
+    form.victConstituency.choices =[('', "Constituency")]+[(d.id, d.name) for d in constituency.query.order_by('name').all()]
+    form.victWard.choices =[('', "Ward")]+[(w.id, w.name) for w in ward.query.order_by('name').all()]
 
-    counties = county.query.all()
-    constituencies = constituency.query.all()
-    wards = ward.query.all()
-
-    form.victCounty.choices = [("","County")] + [(county.name, county.name) for county in counties]
-    form.victConstituency.choices = [("","Constituency")] + [(constituency.name, constituency.name) for constituency in constituencies]
-    form.victWard.choices = [("","Ward")] + [(ward.name, ward.name) for ward in wards]
 
     if request.method == 'POST' and form.validate():
-        return
+
+        countyIns = form.victCounty.data
+        consituencyIns = form.victConstituency.data
+        wardIns = form.victWard.data
 
         alert = crimealert(victimType =form.typeVictim.data, victimName = form.nameVictim.data, perpetratorName = form.perpetratorName.data, \
                       reporterName=form.nameReporter.data, reporterPhone=form.phoneReporter.data, detailsCrime = form.crimeDetails.data, \
-                      detailsPlace = form.placeDetails.data, country=147, county=form.victCounty.data, constituency = form.victConstituency.data, \
-                      ward = form.victWard.data, time=datetime.now(), status='new')
+                      detailsPlace = form.placeDetails.data, country=147,county=int(countyIns), constituency = int(consituencyIns), \
+                      ward = int(wardIns),status='new', urgency = 'medium', org_id= 1, location='1')
 
+        print('Nothing here')
         db.session.add(alert)
 
+        # alert.county.append(county.query.get(form.victCounty.data))
+        # alert.constituency.append(constituency.query.get(form.victConstituency.data))
+        # alert.ward.append(ward.query.get(form.victWard.data))
+
         try:
+            print('Success')
             db.session.commit
+        except AttributeError:
+            print(repr(action))
+            raise AttributeError
         except:
+            print('Error')
             db.session.rollback()
+
+        # need to create separate function with arguments for sending mails
         from app import mail
+
+        ward_name = form.victWard.name
+        constituency_name = form.victConstituency.name
+        type_= form.typeVictim.data
 
         # msg = Message(subject='no reply:New Crime Report!',
         #               html='<p> We have received a new report ' \
@@ -47,9 +65,8 @@ def index():
         #               recipients=["imransaid247@gmail.com"])
 
         msg = Message(subject='No Reply : New Crime Report!',
-                      html=render_template('reportmail.html', ward=ward, constituency=constituency, type=type),
+                      html=render_template('reportmail.html', ward=ward_name, constituency=constituency_name, type=type_),
                       recipients=["imransaid247@gmail.com"])
-
 
         mail.send(msg)
 
@@ -90,6 +107,12 @@ class CustomView(BaseView):
 
 
 class MyAdminIndexView(AdminIndexView):
+
+    @expose('/')
+    def index(self):
+        if not current_user.has_role('admin'):
+            return redirect(url_for('public.index'))
+        return self.render('admin/index.html')
 
     @expose('/mailbox')
     def mailboxMod(self):

@@ -10,7 +10,8 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-from app.models import user, role, crimealert, organization, MyModelView, UserView, RoleView, AlertView, OrgView
+from app.models import user, role, crimealert, organization, MyModelView, UserView, RoleView, AlertView, OrgView, \
+    country, county, constituency, ward
 from app.main.views import MyAdminIndexView
 mail = Mail()
 
@@ -64,8 +65,13 @@ def create_app(config_name):
 
     # Add model views
     admin.add_view(AlertView(crimealert, db.session, menu_icon_type='fa', menu_icon_value='fa-exclamation-triangle', name="Alerts"))
-    admin.add_view(RoleView(role, db.session, menu_icon_type='fa', menu_icon_value='fa-black-tie', name="Roles"))
-    admin.add_view(UserView(user, db.session, menu_icon_type='fa', menu_icon_value='fa-user-circle', name="Users"))
+    admin.add_view(RoleView(role, db.session,  category='User Management',menu_icon_type='fa', menu_icon_value='fa-black-tie', name="Roles"))
+    admin.add_view(UserView(user, db.session, category='User Management',menu_icon_type='fa', menu_icon_value='fa-user-circle', name="Users"))
+    admin.add_view(MyModelView(country, db.session, category='Localization',menu_icon_type='fa', menu_icon_value='fa-user-circle', name="Country"))
+    admin.add_view(MyModelView(county, db.session, category='Localization',menu_icon_type='fa', menu_icon_value='fa-user-circle', name="County"))
+    admin.add_view(MyModelView(constituency, db.session, category='Localization',menu_icon_type='fa', menu_icon_value='fa-user-circle', name="Constituency"))
+    admin.add_view(MyModelView(ward, db.session, category='Localization',menu_icon_type='fa', menu_icon_value='fa-user-circle', name="Ward"))
+
     # admin.add_view(OrgView(organization, db.session, menu_icon_type='fa', menu_icon_value='fa-sitemap', name='Organization'))
     # admin.add_view(CaseView(case, db.session, menu_icon_type='fa', menu_icon_value='fa-copy', name='Cases'))
     # admin.add_view(StaffView(staff, db.session, menu_icon_type='fa', menu_icon_value='fa-users', name='Staff'))

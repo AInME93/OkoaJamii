@@ -63,12 +63,97 @@
      </div>
 
     <!-- Bootstrap core JavaScript -->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!--<script src="../../static/jquery/jquery.min.js"></script>-->
+    <!--<script src="../../static/bootstrap/js/bootstrap.bundle.min.js"></script>-->
 
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <!--<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-  </body>
+
+
+<script charset="utf-8" type="text/javascript">
+$(function() {
+
+    // jQuery selection for the 2 select boxes
+    var dropdown = {
+        victCounty: $('#victCounty'),
+        victConstituency: $('#victConstituency')
+    };
+
+    // call to update on load
+    updateConstituency();
+
+    // function to call XHR and update constituency dropdown
+    function updateConstituency() {
+        var send = {
+            victCounty: dropdown.victCounty.val()
+        };
+
+        dropdown.victConstituency.attr('disabled', 'disabled');
+        dropdown.victConstituency.empty();
+
+        $.getJSON("{{ url_for('public._get_constituencies') }}", send, function(data) {
+            data.forEach(function(item) {
+                dropdown.victConstituency.append(
+                    $('<option>', {
+                        value: item[0],
+                        text: item[1]
+                    })
+                );
+            });
+            dropdown.victConstituency.removeAttr('disabled');
+        });
+    }
+
+    // event listener to state dropdown change
+    dropdown.victCounty.on('change', function() {
+        updateConstituency();
+    });
+});
+</script>
+
+<script charset="utf-8" type="text/javascript">
+$(function() {
+
+    // jQuery selection for the 2 select boxes
+    var dropdown = {
+        victWard: $('#victWard'),
+        victConstituency: $('#victConstituency')
+    };
+
+    // call to update on load
+    updateWard();
+
+    // function to call XHR and update ward dropdown
+    function updateWard() {
+        var send = {
+            victConstituency: dropdown.victConstituency.val()
+        };
+
+        dropdown.victWard.attr('disabled', 'disabled');
+        dropdown.victWard.empty();
+
+        $.getJSON("{{ url_for('public._get_wards') }}", send, function(data) {
+            data.forEach(function(item) {
+                dropdown.victWard.append(
+                    $('<option>', {
+                        value: item[0],
+                        text: item[1]
+                    })
+                );
+            });
+            dropdown.victWard.removeAttr('disabled');
+        });
+    }
+
+    // event listener to state dropdown change
+    dropdown.victConstituency.on('change', function() {
+        updateWard();
+    });
+});
+</script>
+
+</body>
 
 </html>

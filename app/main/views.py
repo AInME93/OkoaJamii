@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import render_template, request, flash, url_for
+from flask import render_template, request, flash, url_for, jsonify
 from flask_admin import expose, BaseView, AdminIndexView
 from flask_admin.actions import action
 from flask_login import current_user
@@ -18,8 +18,8 @@ def index():
 
     form = alertForm()
     form.victCounty.choices =[('', "County")]+[(str(c.id), c.name) for c in county.query.order_by('name').all()]
-    form.victConstituency.choices =[('', "Constituency")]+[(d.id, d.name) for d in constituency.query.order_by('name').all()]
-    form.victWard.choices =[('', "Ward")]+[(w.id, w.name) for w in ward.query.order_by('name').all()]
+    form.victConstituency.choices =[('', "Constituency")]+[(str(d.id), d.name) for d in constituency.query.order_by('name').all()]
+    form.victWard.choices =[('', "Ward")]+[(str(w.id), w.name) for w in ward.query.order_by('name').all()]
 
 
     if request.method == 'POST' and form.validate():
@@ -73,6 +73,20 @@ def index():
         flash('Thank you for playing your role in saving a life!')
 
     return render_template('index.html', form = form)
+
+
+@public.route('/_get_constituencies/', methods =['GET', 'POST'])
+def _get_constituencies():
+    county_id = request.args.get('victCounty', '01', type = str)
+    constituencies = [('', "Constituency")]+[(str(d.id), d.name) for d in constituency.query.filter_by(county_id = county_id).order_by('name').all()]
+    return jsonify(constituencies)
+
+
+@public.route('/_get_wards/', methods =['GET', 'POST'])
+def _get_wards():
+    const_id = request.args.get('victConstituency', '01', type = str)
+    wards = [('', "Ward")]+[(str(d.id), d.name) for d in ward.query.filter_by(constituency_id = const_id).order_by('name').all()]
+    return jsonify(wards)
 
 @public.route('/contact')
 def contact():

@@ -47,8 +47,8 @@ def create_app(config_name):
     from app.main import public as main_blueprint
     app.register_blueprint(main_blueprint)
 
-    from app.organization import private as private_blueprint
-    app.register_blueprint(private_blueprint)
+    # from app.organization import private as private_blueprint
+    # app.register_blueprint(private_blueprint)
 
     # define a context processor for merging flask-admin's template context into the
     # flask-security views.
@@ -72,7 +72,7 @@ def create_app(config_name):
     admin.add_view(MyModelView(constituency, db.session, category='Localization',menu_icon_type='fa', menu_icon_value='fa-user-circle', name="Constituency"))
     admin.add_view(MyModelView(ward, db.session, category='Localization',menu_icon_type='fa', menu_icon_value='fa-user-circle', name="Ward"))
 
-    # admin.add_view(OrgView(organization, db.session, menu_icon_type='fa', menu_icon_value='fa-sitemap', name='Organization'))
+    admin.add_view(OrgView(organization, db.session, menu_icon_type='fa', menu_icon_value='fa-sitemap', name='Organization'))
     # admin.add_view(CaseView(case, db.session, menu_icon_type='fa', menu_icon_value='fa-copy', name='Cases'))
     # admin.add_view(StaffView(staff, db.session, menu_icon_type='fa', menu_icon_value='fa-users', name='Staff'))
 
@@ -85,6 +85,33 @@ def create_app(config_name):
     with app.app_context():
         db.init_app(app)
         mail.init_app(app)
-        # admin.init_app(app)F
+
+        # user_role = role(name='user')
+        # super_user_role = role(name='admin')
+        # db.session.add(user_role)
+        # db.session.add(super_user_role)
+        # db.session.commit()
+        #
+        # test_user = user_datastore.create_user(
+        #     username='OkoaAdmin',
+        #     email='okoajamii11@gmail.com',
+        #     name = 'Okoa',
+        #     password=hash_password('SavingLivesAPriority2019'),
+        #     roles=[user_role, super_user_role]
+        # )
+        # db.session.commit()
+
+        # user_role = role.query.filter(name=='admin').all()
+        #
+        # test_user = user_datastore.create_user(
+        #     username='OkoaAdmin',
+        #     email='okoajamii11@gmail.com',
+        #     name = 'Okoa',
+        #     password=hash_password('SavingLivesAPriority2019'),
+        #     roles=[user_role]
+        # )
+        # db.session.commit()
+
+        # admin.init_app(app)
 
     return app

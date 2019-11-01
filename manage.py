@@ -1,17 +1,16 @@
 #!/usr/bin/env python
 import os
-import os.path as op
-
-file_path = op.join(op.dirname(__file__), 'files')
-try:
-    os.mkdir(file_path)
-except OSError:
-    pass
-
+# import os.path as op
+#
+# file_path = op.join(op.dirname(__file__), 'files')
+# try:
+#     os.mkdir(file_path)
+# except OSError:
+#     pass
 
 
 from app import create_app, db
-from app.models import User, Role
+from app.models import user, role
 from flask_script import Manager, Shell, Server
 from flask_migrate import Migrate, MigrateCommand
 
@@ -25,7 +24,7 @@ server = Server(host='localhost', port=5002)
 # so that they are automatically imported into the shell
 
 def make_shell_context():
-    return dict(app=app, db=db, User = User, Role = Role)
+    return dict(app=app, db=db, User = user, Role = role)
 
 @manager.command
 def test():

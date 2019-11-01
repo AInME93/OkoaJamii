@@ -17,6 +17,8 @@
 
   {% block head_css %}
   <!-- Bootstrap 3.3.6 -->
+  <link href="{{url_for('static',filename='static/js/chart.min.js')}}" rel="stylesheet"></link>
+
   <link href="{{url_for('static',filename='css/bootstrap.min.css')}}" rel="stylesheet"></link>
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -228,6 +230,13 @@
             </li>
             <li><a href="#"><i class="fa fa-circle-o"></i> Level One</a></li>
           </ul>
+        </li>
+
+
+        <li>
+          <a href="/admin/analysis">
+            <i class="fa fa-pie-chart"></i> <span>Analysis</span>
+          </a>
         </li>
 
         <li>

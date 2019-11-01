@@ -312,8 +312,8 @@ class MyModelView(sqla.ModelView):
                 # login
                 return redirect(url_for('security.login', next=request.url))
 
-    edit_modal_template = 'admin/edit.html'
-    details_modal_template = "admin/details.html"
+    # edit_modal_template = 'admin/edit.html'
+    # details_modal_template = "admin/details.html"
     # can_edit = True
     edit_modal = True
     create_modal = True
@@ -388,6 +388,8 @@ class RoleView(MyModelView):
     column_editable_list = ['name']
     column_searchable_list = column_editable_list
     column_filters = column_editable_list
+
+
 
 class UserView(MyModelView):
 
